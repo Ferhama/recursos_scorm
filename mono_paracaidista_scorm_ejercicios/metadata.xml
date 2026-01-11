@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lom xmlns="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ltsc.ieee.org/xsd/LOM http://ltsc.ieee.org/xsd/lomv1.0/lom.xsd">
+    <general>
+        <identifier>
+            <catalog>URI</catalog>
+            <entry>mono-paracaidista-energia-mecanica</entry>
+        </identifier>
+        <title>
+            <string language="es">Conservación de la Energía Mecánica - El Mono Paracaidista sin Paracaídas</string>
+        </title>
+        <language>es</language>
+        <description>
+            <string language="es">Simulación interactiva que demuestra el principio de conservación de la energía mecánica a través de la caída libre de un mono estilizado. Los estudiantes pueden observar en tiempo real cómo se transforma la energía potencial en energía cinética mientras el mono cae desde un edificio, manteniendo constante la energía mecánica total.</string>
+        </description>
+        <keyword>
+            <string language="es">física</string>
+        </keyword>
+        <keyword>
+            <string language="es">energía mecánica</string>
+        </keyword>
+        <keyword>
+            <string language="es">conservación de energía</string>
+        </keyword>
+        <keyword>
+            <string language="es">energía cinética</string>
+        </keyword>
+        <keyword>
+            <string language="es">energía potencial</string>
+        </keyword>
+        <keyword>
+            <string language="es">simulación interactiva</string>
+        </keyword>
+        <keyword>
+            <string language="es">caída libre</string>
+        </keyword>
+        <keyword>
+            <string language="es">educación secundaria</string>
+        </keyword>
+        <coverage>
+            <string language="es">Educación Secundaria - Física</string>
+        </coverage>
+    </general>
+    
+    <lifeCycle>
+        <version>
+            <string>1.0</string>
+        </version>
+        <status>
+            <source>LOMv1.0</source>
+            <value>final</value>
+        </status>
+        <contribute>
+            <role>
+                <source>LOMv1.0</source>
+                <value>author</value>
+            </role>
+            <entity>Recurso Educativo Digital</entity>
+            <date>
+                <dateTime>2024-12-05</dateTime>
+                <description>
+                    <string language="es">Fecha de creación del recurso</string>
+                </description>
+            </date>
+        </contribute>
+    </lifeCycle>
+    
+    <metaMetadata>
+        <metadataSchema>LOMv1.0</metadataSchema>
+        <language>es</language>
+    </metaMetadata>
+    
+    <technical>
+        <format>text/html</format>
+        <size>102400</size>
+        <location>s3://aules-resources/physics/energy-conservation/</location>
+        <requirement>
+            <orComposite>
+                <type>
+                    <source>LOMv1.0</source>
+                    <value>browser</value>
+                </type>
+                <name>
+                    <source>LOMv1.0</source>
+                    <value>any</value>
+                </name>
+                <minimumVersion>11</minimumVersion>
+                <maximumVersion></maximumVersion>
+            </orComposite>
+        </requirement>
+        <installationRemarks>
+            <string language="es">Este recurso se ejecuta directamente en el navegador web sin requerir instalación adicional. Compatible con navegadores modernos que soporten HTML5, CSS3 y JavaScript ES6.</string>
+        </installationRemarks>
+    </technical>
+    
+    <educational>
+        <interactivityType>
+            <source>LOMv1.0</source>
+            <value>mixed</value>
+        </interactivityType>
+        <learningResourceType>
+            <source>LOMv1.0</source>
+            <value>simulation</value>
+        </learningResourceType>
+        <interactivityLevel>
+            <source>LOMv1.0</source>
+            <value>high</value>
+        </interactivityLevel>
+        <difficulty>
+            <source>LOMv1.0</source>
+            <value>medium</value>
+        </difficulty>
+        <typicalLearningTime>
+            <duration>PT15M</duration>
+            <description>
+                <string language="es">Tiempo estimado de uso: 15 minutos</string>
+            </description>
+        </typicalLearningTime>
+        <language>es</language>
+        <description>
+            <string language="es">Los estudiantes interactúan con una simulación de caída libre donde pueden controlar el tiempo y observar cómo cambian las energías cinética y potencial, verificando que la suma permanece constante.</string>
+        </description>
+        <typicalAgeRange>
+            <string language="es">14-18</string>
+        </typicalAgeRange>
+        <context>
+            <source>LOMv1.0</source>
+            <value>school</value>
+        </context>
+        <discipline>
+            <string language="es">Física</string>
+        </discipline>
+        <educationalObjective>
+            <string language="es">Comprender el principio de conservación de la energía mecánica</string>
+        </educationalObjective>
+        <educationalObjective>
+            <string language="es">Distinguir entre energía cinética y potencial gravitatoria</string>
+        </educationalObjective>
+        <educationalObjective>
+            <string language="es">Aplicar fórmulas de energía en problemas de caída libre</string>
+        </educationalObjective>
+        <educationalObjective>
+            <string language="es">Analizar gráficamente la transformación de energía</string>
+        </educationalObjective>
+    </educational>
+    
+    <rights>
+        <cost>
+            <source>LOMv1.0</source>
+            <value>no</value>
+        </cost>
+        <copyrightAndOtherRestrictions>
+            <source>LOMv1.0</source>
+            <value>yes</value>
+        </copyrightAndOtherRestrictions>
+        <description>
+            <string language="es">Este recurso educativo es de acceso abierto para uso educativo no comercial.</string>
+        </description>
+    </rights>
+    
+    <classification>
+        <purpose>
+            <source>LOMv1.0</source>
+            <value>educational</value>
+        </purpose>
+        <taxonPath>
+            <source>
+                <string language="es">Área de Conocimiento</string>
+            </source>
+            <taxon>
+                <id>530</id>
+                <entry>
+                    <string language="es">Física</string>
+                </entry>
+            </taxon>
+            <taxon>
+                <id>531.6</id>
+                <entry>
+                    <string language="es">Mecánica</string>
+                </entry>
+            </taxon>
+        </taxonPath>
+    </classification>
+</lom>

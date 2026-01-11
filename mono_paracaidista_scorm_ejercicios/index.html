@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conservación de la Energía Mecánica - El Mono Paracaidista</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Open+Sans:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        :root {
+            --sky-blue: #E6F3FF;
+            --building-gray: #8B9DC3;
+            --monkey-brown: #D4A574;
+            --kinetic-red: #FF6B6B;
+            --potential-green: #4ECDC4;
+            --mechanical-blue: #45B7D1;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(180deg, var(--sky-blue) 0%, #B8E6FF 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .title-font {
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        .mono-font {
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .building-bg {
+            background: linear-gradient(180deg, var(--building-gray) 0%, #6B7AA0 100%);
+            position: relative;
+        }
+        
+        .building-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(0deg, transparent 80%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.1) 85%, transparent 85%);
+            background-size: 40px 40px;
+        }
+        
+        .energy-bar {
+            transition: height 0.3s ease-in-out;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .energy-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .monkey-sprite {
+            width: 80px;
+            height: 80px;
+            background-image: url('monkey_poly.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .trajectory-line {
+            position: absolute;
+            border: 2px dashed rgba(255,255,255,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .control-panel {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .slider-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--mechanical-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--mechanical-blue);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .info-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .formula-box {
+            background: rgba(69, 183, 209, 0.1);
+            border: 2px solid var(--mechanical-blue);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            font-family: 'Roboto Mono', monospace;
+        }
+    
+        /* Estilos para pestañas */
+        .tab-btn {
+            background: #e5e7eb;
+            color: #4b5563;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .tab-btn:hover {
+            background: #d1d5db;
+        }
+        .active-tab {
+            background: var(--mechanical-blue);
+            color: #ffffff;
+        }
+</style>
+</head>
+<body>
+    <!-- Contenedor Principal -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white/90 backdrop-blur-sm shadow-lg">
+            <div class="container mx-auto px-6 py-4">
+                <h1 class="title-font text-4xl text-center text-gray-800 mb-2">
+                    🐵 El Mono Paracaidista sin Paracaídas
+                </h1>
+                <p class="text-center text-gray-600 text-lg">
+                    Simulación Interactiva de Conservación de Energía Mecánica
+                </p>
+            </div>
+        </header>
+
+        <!-- Área de Simulación -->
+        <!-- Navegación de pestañas -->
+        <nav class="bg-white/80 border-b border-gray-200">
+            <div class="container mx-auto px-6 pt-4 flex space-x-4">
+                <button id="tabSimBtn" class="tab-btn active-tab px-4 py-2 rounded-t-lg font-semibold text-sm" onclick="showTab('simulacion')">
+                    Simulación
+                </button>
+                <button id="tabEjBtn" class="tab-btn px-4 py-2 rounded-t-lg font-semibold text-sm" onclick="showTab('ejercicios')">
+                    Ejercicios
+                </button>
+            </div>
+        </nav>
+
+        <main class="flex-1">
+            <div id="tab-simulacion" class="flex flex-col lg:flex-row">
+            <!-- Panel de Simulación -->
+            <div class="lg:w-2/3 p-6">
+                <div class="relative bg-gradient-to-b from-blue-200 to-blue-400 rounded-xl overflow-hidden" 
+                     style="height: 600px;" id="simulationArea">
+                    
+                    <!-- Edificio -->
+                    <div class="building-bg absolute top-0 right-0 w-32 h-full"></div>
+                    
+                    <!-- Mono -->
+                    <div id="monkey" class="monkey-sprite"></div>
+                    
+                    <!-- Trayectoria -->
+                    <div id="trajectory" class="trajectory-line"></div>
+                    
+                    <!-- Indicadores de Altura -->
+                    <div class="absolute left-4 top-4 text-white font-semibold">
+                        <div class="bg-black/30 rounded px-2 py-1 mb-2">
+                            Altura: <span id="heightValue" class="mono-font">50.0</span> m
+                        </div>
+                        <div class="bg-black/30 rounded px-2 py-1 mb-2">
+                            Velocidad: <span id="velocityValue" class="mono-font">0.0</span> m/s
+                        </div>
+                        <div class="bg-black/30 rounded px-2 py-1">
+                            Tiempo: <span id="timeValue" class="mono-font">0.0</span> s
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Control y Energías -->
+            <div class="lg:w-1/3 p-6 space-y-6">
+                <!-- Controles -->
+                <div class="control-panel p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Controles de Simulación</h3>
+                    
+                    <div class="slider-container">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Posición del Mono
+                        </label>
+                        <input type="range" id="positionSlider" class="slider" 
+                               min="0" max="100" value="0" step="1">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Arriba</span>
+                            <span>Abajo</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2 mt-4">
+                        <button id="playBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                            ▶️ Play
+                        </button>
+                        <button id="pauseBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                            ⏸️ Pausa
+                        </button>
+                        <button id="resetBtn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                            🔄 Reiniciar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Energías -->
+                <div class="control-panel p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Energías en Tiempo Real</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Energía Cinética -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-red-600">Energía Cinética (EC)</span>
+                                <span id="kineticValue" class="mono-font text-sm font-bold">0.0 J</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-6 relative">
+                                <div id="kineticBar" class="energy-bar h-full rounded-full" 
+                                     style="width: 0%; background-color: var(--kinetic-red);"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Energía Potencial -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-green-600">Energía Potencial (EP)</span>
+                                <span id="potentialValue" class="mono-font text-sm font-bold">245.0 J</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-6 relative">
+                                <div id="potentialBar" class="energy-bar h-full rounded-full" 
+                                     style="width: 100%; background-color: var(--potential-green);"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Energía Mecánica -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-blue-600">Energía Mecánica (EM)</span>
+                                <span id="mechanicalValue" class="mono-font text-sm font-bold">245.0 J</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-6 relative">
+                                <div id="mechanicalBar" class="energy-bar h-full rounded-full" 
+                                     style="width: 100%; background-color: var(--mechanical-blue);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Teórica -->
+                <div class="info-card">
+                    <h4 class="font-bold text-gray-800 mb-3">📚 Fórmulas de Energía</h4>
+                    
+                    <div class="formula-box">
+                        <div class="text-sm mb-2">
+                            <strong>EC = ½mv²</strong><br>
+                            <span class="text-xs text-gray-600">Energía Cinética</span>
+                        </div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        <div class="text-sm mb-2">
+                            <strong>EP = mgh</strong><br>
+                            <span class="text-xs text-gray-600">Energía Potencial</span>
+                        </div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        <div class="text-sm mb-2">
+                            <strong>EM = EC + EP</strong><br>
+                            <span class="text-xs text-gray-600">Energía Mecánica Total</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        <p class="text-xs text-yellow-800">
+                            <strong>💡 Principio:</strong> La energía mecánica total se conserva en ausencia de rozamiento.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Datos del Experimento -->
+                <div class="info-card">
+                    <h4 class="font-bold text-gray-800 mb-3">📊 Datos del Mono</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Masa (m):</span>
+                            <span class="mono-font font-bold">0.5 kg</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Altura inicial (h₀):</span>
+                            <span class="mono-font font-bold">50.0 m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Gravedad (g):</span>
+                            <span class="mono-font font-bold">9.8 m/s²</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Energía total:</span>
+                            <span id="totalEnergy" class="mono-font font-bold text-blue-600">245.0 J</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            </div> <!-- /tab-simulacion -->
+
+            <!-- Pestaña de Ejercicios -->
+            <div id="tab-ejercicios" class="hidden max-w-4xl mx-auto p-6">
+                <h2 class="title-font text-2xl mb-4 text-gray-800">
+                    📝 Ejercicios interactivos de energía
+                </h2>
+                <p class="text-sm text-gray-700 mb-4">
+                    Resuelve tantos ejercicios como quieras. A partir de <strong>5 intentos</strong> tu nota (0‑100%) se envía automáticamente al boletín de Aules.
+                </p>
+
+                <div class="bg-white/90 rounded-xl shadow-lg p-6 space-y-4">
+                    <div id="exerciseStatement" class="text-gray-800 text-base leading-relaxed">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <label for="exerciseAnswer" class="text-sm font-medium text-gray-700">
+                            Respuesta numérica (en J):
+                        </label>
+                        <input id="exerciseAnswer" type="number" step="0.1"
+                               class="mono-font border border-gray-300 rounded px-3 py-2 w-40 focus:outline-none focus:ring-2 focus:ring-sky-400">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button id="checkExerciseBtn"
+                                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow">
+                            ✔️ Comprobar
+                        </button>
+                        <button id="newExerciseBtn"
+                                class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded shadow">
+                            🔄 Nuevo ejercicio
+                        </button>
+                    </div>
+
+                    <div id="exerciseFeedback" class="mt-2 text-sm"></div>
+
+                    <div class="mt-4 text-xs text-gray-700 space-y-1">
+                        <p>Ejercicios realizados: <span id="exDone">0</span></p>
+                        <p>Aciertos: <span id="exCorrect">0</span></p>
+                        <p>Nota enviada a Aules: <span id="exScore">–</span></p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Configuración de la simulación
+        const simulationConfig = {
+            mass: 0.5, // kg
+            gravity: 9.8, // m/s²
+            initialHeight: 50, // m
+            maxTime: 3.2, // s (tiempo para caer 50m)
+            animationDuration: 5000 // ms
+        };
+
+        // Variables de estado
+        let currentTime = 0;
+        let isPlaying = false;
+        let animationId = null;
+        let startTime = null;
+
+        // Elementos del DOM
+        const monkey = document.getElementById('monkey');
+        const slider = document.getElementById('positionSlider');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const simulationArea = document.getElementById('simulationArea');
+        const trajectory = document.getElementById('trajectory');
+
+        // Elementos de valores
+        const heightValue = document.getElementById('heightValue');
+        const velocityValue = document.getElementById('velocityValue');
+        const timeValue = document.getElementById('timeValue');
+        const kineticValue = document.getElementById('kineticValue');
+        const potentialValue = document.getElementById('potentialValue');
+        const mechanicalValue = document.getElementById('mechanicalValue');
+        const kineticBar = document.getElementById('kineticBar');
+        const potentialBar = document.getElementById('potentialBar');
+        const mechanicalBar = document.getElementById('mechanicalBar');
+
+        // Funciones de cálculo físico
+        function calculatePhysics(time) {
+            // Cinemática
+            const height = Math.max(0, simulationConfig.initialHeight - 0.5 * simulationConfig.gravity * time * time);
+            const velocity = simulationConfig.gravity * time;
+            
+            // Energías
+            const kineticEnergy = 0.5 * simulationConfig.mass * velocity * velocity;
+            const potentialEnergy = simulationConfig.mass * simulationConfig.gravity * height;
+            const mechanicalEnergy = kineticEnergy + potentialEnergy;
+            
+            return {
+                height,
+                velocity,
+                time,
+                kineticEnergy,
+                potentialEnergy,
+                mechanicalEnergy
+            };
+        }
+
+        // Función para actualizar la posición del mono
+        function updateMonkeyPosition(percentage) {
+            const time = (percentage / 100) * simulationConfig.maxTime;
+            const physics = calculatePhysics(time);
+            
+            // Calcular posición en píxeles
+            const areaHeight = simulationArea.offsetHeight;
+            const areaWidth = simulationArea.offsetWidth;
+            const buildingWidth = 128; // w-32 = 128px
+            
+            // Posición Y (inversa, ya que cae)
+            const yPosition = (1 - physics.height / simulationConfig.initialHeight) * (areaHeight - 100);
+            
+            // Posición X (caída parabólica hacia el centro)
+            const xPosition = areaWidth - buildingWidth - 100 + (percentage / 100) * 50;
+            
+            monkey.style.left = `${xPosition}px`;
+            monkey.style.top = `${yPosition}px`;
+            monkey.style.transform = `rotate(${percentage * 0.5}deg)`;
+            
+            // Actualizar trayectoria
+            updateTrajectory(percentage);
+            
+            // Actualizar valores de energía
+            updateEnergyValues(physics);
+        }
+
+        // Función para actualizar la trayectoria
+        function updateTrajectory(percentage) {
+            const areaHeight = simulationArea.offsetHeight;
+            const areaWidth = simulationArea.offsetWidth;
+            
+            trajectory.style.width = `${percentage * 2}px`;
+            trajectory.style.height = `${percentage * 3}px`;
+            trajectory.style.left = `${areaWidth - 150}px`;
+            trajectory.style.top = `${areaHeight - percentage * 3 - 50}px`;
+        }
+
+        // Función para actualizar los valores de energía
+        function updateEnergyValues(physics) {
+            // Actualizar valores numéricos
+            heightValue.textContent = physics.height.toFixed(1);
+            velocityValue.textContent = physics.velocity.toFixed(1);
+            timeValue.textContent = physics.time.toFixed(1);
+            kineticValue.textContent = `${physics.kineticEnergy.toFixed(1)} J`;
+            potentialValue.textContent = `${physics.potentialEnergy.toFixed(1)} J`;
+            mechanicalValue.textContent = `${physics.mechanicalEnergy.toFixed(1)} J`;
+            
+            // Calcular porcentajes para las barras
+            const maxEnergy = simulationConfig.mass * simulationConfig.gravity * simulationConfig.initialHeight;
+            const kineticPercent = (physics.kineticEnergy / maxEnergy) * 100;
+            const potentialPercent = (physics.potentialEnergy / maxEnergy) * 100;
+            const mechanicalPercent = (physics.mechanicalEnergy / maxEnergy) * 100;
+            
+            // Actualizar barras con animación
+            anime({
+                targets: kineticBar,
+                width: `${kineticPercent}%`,
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+            
+            anime({
+                targets: potentialBar,
+                width: `${potentialPercent}%`,
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+            
+            anime({
+                targets: mechanicalBar,
+                width: `${mechanicalPercent}%`,
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+        }
+
+        // Función de animación
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / simulationConfig.animationDuration, 1);
+            
+            const percentage = progress * 100;
+            slider.value = percentage;
+            updateMonkeyPosition(percentage);
+            
+            if (progress < 1 && isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            } else {
+                isPlaying = false;
+                startTime = null;
+            }
+        }
+
+        // Event Listeners
+        slider.addEventListener('input', (e) => {
+            const percentage = parseInt(e.target.value);
+            updateMonkeyPosition(percentage);
+            if (isPlaying) {
+                isPlaying = false;
+                cancelAnimationFrame(animationId);
+                startTime = null;
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                isPlaying = true;
+                startTime = null;
+                animationId = requestAnimationFrame(animate);
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            startTime = null;
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            startTime = null;
+            slider.value = 0;
+            updateMonkeyPosition(0);
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMonkeyPosition(0);
+            
+            // Configurar trayectoria inicial
+            trajectory.style.width = '0px';
+            trajectory.style.height = '0px';
+        });
+
+        // Manejo responsive
+        window.addEventListener('resize', () => {
+            const currentPercentage = parseInt(slider.value);
+            updateMonkeyPosition(currentPercentage);
+        });
+    
+        // ==========================
+        // Gestión de pestañas
+        // ==========================
+        const tabSim = document.getElementById('tab-simulacion');
+        const tabEj = document.getElementById('tab-ejercicios');
+        const tabSimBtn = document.getElementById('tabSimBtn');
+        const tabEjBtn = document.getElementById('tabEjBtn');
+
+        function showTab(name) {
+            if (!tabSim || !tabEj) return;
+            if (name === 'ejercicios') {
+                tabSim.classList.add('hidden');
+                tabEj.classList.remove('hidden');
+                tabSimBtn.classList.remove('active-tab');
+                tabEjBtn.classList.add('active-tab');
+            } else {
+                tabEj.classList.add('hidden');
+                tabSim.classList.remove('hidden');
+                tabEjBtn.classList.remove('active-tab');
+                tabSimBtn.classList.add('active-tab');
+            }
+        }
+
+        // ==========================
+        // Soporte básico SCORM 1.2
+        // ==========================
+        let scormApi = null;
+        let scormInitialised = false;
+
+        function findAPI(win) {
+            let attempts = 0;
+            while (!win.API && win.parent && win.parent !== win && attempts < 7) {
+                attempts++;
+                win = win.parent;
+            }
+            return win.API || null;
+        }
+
+        function getAPI() {
+            if (scormApi) return scormApi;
+            scormApi = findAPI(window);
+            if (!scormApi && window.opener) {
+                scormApi = findAPI(window.opener);
+            }
+            return scormApi;
+        }
+
+        function initSCORM() {
+            const api = getAPI();
+            if (!api || scormInitialised) return;
+            const result = api.LMSInitialize("");
+            scormInitialised = (String(result) === "true");
+            if (scormInitialised) {
+                api.LMSSetValue("cmi.core.score.min", "0");
+                api.LMSSetValue("cmi.core.score.max", "100");
+                api.LMSSetValue("cmi.core.lesson_status", "incomplete");
+                api.LMSCommit("");
+            }
+        }
+
+        function setSCORMScore(score) {
+            const api = getAPI();
+            if (!api || !scormInitialised) return;
+            const clamped = Math.max(0, Math.min(100, Math.round(score)));
+            api.LMSSetValue("cmi.core.score.raw", String(clamped));
+            const status = clamped >= 50 ? "passed" : "incomplete";
+            api.LMSSetValue("cmi.core.lesson_status", status);
+            api.LMSCommit("");
+        }
+
+        window.addEventListener('load', () => {
+            try { initSCORM(); } catch (e) { console.warn("SCORM no disponible", e); }
+        });
+
+        window.addEventListener('unload', () => {
+            const api = getAPI();
+            if (api && scormInitialised) {
+                try { api.LMSFinish(""); } catch (e) {}
+            }
+        });
+
+        // ===================================
+        // Generador de ejercicios aleatorios
+        // ===================================
+        const exerciseStatement = document.getElementById('exerciseStatement');
+        const exerciseAnswer = document.getElementById('exerciseAnswer');
+        const exerciseFeedback = document.getElementById('exerciseFeedback');
+        const checkExerciseBtn = document.getElementById('checkExerciseBtn');
+        const newExerciseBtn = document.getElementById('newExerciseBtn');
+        const exDoneSpan = document.getElementById('exDone');
+        const exCorrectSpan = document.getElementById('exCorrect');
+        const exScoreSpan = document.getElementById('exScore');
+
+        let currentCorrectAnswer = null;
+        let exercisesDone = 0;
+        let exercisesCorrect = 0;
+
+        const g = 9.8; // m/s²
+
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Tipos de ejercicios basados en la hoja de problemas de energía mecánica
+        function generateExercise() {
+            const type = randInt(1, 5);
+            let text = "";
+            let correct = 0;
+
+            if (type === 1) {
+                // Energía cinética Ec = 1/2 m v^2
+                const m = randInt(300, 1500); // kg
+                const v_kmh = randInt(30, 120); // km/h
+                const v = v_kmh * 1000 / 3600;
+                correct = 0.5 * m * v * v;
+                text = `Un coche de masa <strong>${m} kg</strong> circula a una velocidad de <strong>${v_kmh} km/h</strong>. 
+                        ¿Qué energía cinética tiene?`;
+            } else if (type === 2) {
+                // Energía potencial Ep = m g h
+                const m = randInt(40, 90); // kg
+                const h = randInt(5, 80); // m
+                correct = m * g * h;
+                text = `Una persona de masa <strong>${m} kg</strong> se encuentra a una altura de <strong>${h} m</strong> 
+                        sobre el suelo. ¿Qué energía potencial gravitatoria tiene respecto al suelo?`;
+            } else if (type === 3) {
+                // Energía mecánica al inicio de una caída libre
+                const m = randInt(1, 5); // kg
+                const h = randInt(5, 50); // m
+                correct = m * g * h;
+                text = `Se deja caer un objeto de masa <strong>${m} kg</strong> desde una altura de <strong>${h} m</strong>. 
+                        Despreciando el rozamiento, ¿cuál es su energía mecánica en el punto de partida?`;
+            } else if (type === 4) {
+                // Velocidad en un punto intermedio usando conservación de energía
+                const m = randInt(1, 5); // kg
+                const h0 = randInt(20, 60); // m
+                const h = randInt(0, h0 - 5);
+                const deltaH = h0 - h;
+                const v = Math.sqrt(2 * g * deltaH);
+                correct = 0.5 * m * v * v;
+                text = `Un cuerpo de masa <strong>${m} kg</strong> cae desde una altura de <strong>${h0} m</strong>. 
+                        Cuando pasa por la altura de <strong>${h} m</strong>, ¿qué energía cinética tiene? 
+                        (Desprecia el rozamiento)`;
+            } else {
+                // Piedra lanzada hacia arriba: energía en la altura máxima
+                const m = randInt(1, 3); // kg
+                const hmax = randInt(3, 20); // m
+                correct = m * g * hmax; // toda la energía es potencial
+                text = `Una piedra de masa <strong>${m} kg</strong> se lanza hacia arriba y alcanza una altura máxima de 
+                        <strong>${hmax} m</strong>. ¿Cuál es su energía potencial en lo más alto de la trayectoria? 
+                        (Toma el suelo como referencia de energía potencial cero)`;
+            }
+
+            exerciseStatement.innerHTML = text;
+            currentCorrectAnswer = correct;
+            exerciseAnswer.value = "";
+            exerciseFeedback.textContent = "";
+        }
+
+        function checkExercise() {
+            if (currentCorrectAnswer === null) return;
+            const userValue = parseFloat(exerciseAnswer.value.replace(",", "."));
+            if (isNaN(userValue)) {
+                exerciseFeedback.textContent = "Introduce un número válido en julios.";
+                exerciseFeedback.className = "mt-2 text-sm text-red-600";
+                return;
+            }
+
+            const tolerance = 0.05 * currentCorrectAnswer + 1; // 5% o 1 J mínimo
+            const diff = Math.abs(userValue - currentCorrectAnswer);
+
+            exercisesDone++;
+            const correctNow = diff <= tolerance;
+            if (correctNow) {
+                exercisesCorrect++;
+                exerciseFeedback.textContent = "✅ Resultado correcto (dentro del margen de tolerancia).";
+                exerciseFeedback.className = "mt-2 text-sm text-green-600";
+            } else {
+                exerciseFeedback.textContent = `❌ Resultado incorrecto. La solución correcta era aproximadamente ${currentCorrectAnswer.toFixed(1)} J.`;
+                exerciseFeedback.className = "mt-2 text-sm text-red-600";
+            }
+
+            exDoneSpan.textContent = String(exercisesDone);
+            exCorrectSpan.textContent = String(exercisesCorrect);
+
+            if (exercisesDone >= 5) {
+                const score = 100 * (exercisesCorrect / exercisesDone);
+                exScoreSpan.textContent = score.toFixed(0) + " %";
+                setSCORMScore(score);
+            }
+
+            // Generamos automáticamente un nuevo ejercicio tras comprobar
+            generateExercise();
+        }
+
+        if (checkExerciseBtn && newExerciseBtn) {
+            checkExerciseBtn.addEventListener('click', checkExercise);
+            newExerciseBtn.addEventListener('click', generateExercise);
+        }
+
+        // Generar el primer ejercicio al cargar la página
+        window.addEventListener('load', () => {
+            if (exerciseStatement) {
+                generateExercise();
+            }
+        });
+</script>
+</body>
+</html>

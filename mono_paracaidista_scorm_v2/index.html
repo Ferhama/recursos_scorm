@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conservación de la energía mecánica - Mono paracaidista</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f4f8;
+      color: #222;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.2rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 1.4rem;
+      margin-bottom: 0.4rem;
+    }
+    p {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      padding: 16px 18px 20px;
+      margin-top: 16px;
+    }
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .left, .right {
+      flex: 1 1 300px;
+      min-width: 0;
+    }
+    #scene {
+      width: 100%;
+      max-width: 480px;
+      height: 320px;
+      border-radius: 12px;
+      background: #e3f2fd;
+      display: block;
+      margin: 0 auto;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    input[type="range"] {
+      flex: 1;
+    }
+    .value-badge {
+      min-width: 80px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.9rem;
+    }
+    .energies {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      align-items: flex-end;
+      height: 180px;
+    }
+    .bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .bar {
+      width: 32px;
+      border-radius: 999px;
+      background: #ddd;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .bar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    .bar-fill.ep {
+      background: rgba(33, 150, 243, 0.85);
+    }
+    .bar-fill.ek {
+      background: rgba(244, 67, 54, 0.85);
+    }
+    .bar-fill.em {
+      background: rgba(76, 175, 80, 0.85);
+    }
+    .bar-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .bar-value {
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+    .dot.ep { background: rgba(33,150,243,0.85); }
+    .dot.ek { background: rgba(244,67,54,0.85); }
+    .dot.em { background: rgba(76,175,80,0.85); }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+    .info-table th, .info-table td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      text-align: left;
+    }
+    .info-table th {
+      background: #f5f5f5;
+    }
+    .small {
+      font-size: 0.8rem;
+      color: #555;
+    }
+    @media (max-width: 700px) {
+      #scene {
+        height: 260px;
+      }
+      .energies {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Conservación de la energía mecánica</h1>
+    <p style="text-align:center; font-size:0.9rem;">Escenario: el mono paracaidista (sin paracaídas) cae desde lo alto de un edificio.</p>
+
+    <div class="card">
+      <div class="flex">
+        <div class="left">
+          <h2>Escena</h2>
+          <canvas id="scene" width="480" height="320" aria-label="Escena del mono paracaidista"></canvas>
+          <div class="slider-row">
+            <label for="posSlider">Posición del mono:</label>
+            <input id="posSlider" type="range" min="0" max="100" step="1" value="0" />
+            <div class="value-badge">
+              <span id="alturaTexto">h = 50,0 m</span>
+            </div>
+          </div>
+          <p class="small">Desliza para mover al mono desde lo alto del edificio (izquierda) hasta el suelo (derecha).</p>
+        </div>
+
+        <div class="right">
+          <h2>Energías</h2>
+          <p class="small">
+            Suponemos una masa <strong>m = 1 kg</strong> y una altura inicial <strong>H = 50 m</strong>. La energía cinética se escribe
+            <strong>E<sub>c</sub> = 1/2 · m · v²</strong> y la energía mecánica cumple:
+            <br><strong>E<sub>mec</sub> = E<sub>c</sub> + E<sub>p</sub> (se mantiene constante si no hay rozamientos).</strong>
+          </p>
+
+          <div class="energies">
+            <div class="bar-wrapper">
+              <div class="bar">
+                <div class="bar-fill ep" id="barEp"></div>
+              </div>
+              <div class="bar-label">Potencial</div>
+              <div class="bar-value" id="valEp">E<sub>p</sub> = 490,0 J</div>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar">
+                <div class="bar-fill ek" id="barEk"></div>
+              </div>
+              <div class="bar-label">Cinética</div>
+              <div class="bar-value" id="valEk">E<sub>c</sub> = 0,0 J</div>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar">
+                <div class="bar-fill em" id="barEm"></div>
+              </div>
+              <div class="bar-label">Mecánica</div>
+              <div class="bar-value" id="valEm">E<sub>mec</sub> = 490,0 J</div>
+            </div>
+          </div>
+
+          <div class="legend">
+            <div class="legend-item"><span class="dot ep"></span> Energía potencial gravitatoria</div>
+            <div class="legend-item"><span class="dot ek"></span> Energía cinética (1/2·m·v²)</div>
+            <div class="legend-item"><span class="dot em"></span> Energía mecánica total (E<sub>c</sub> + E<sub>p</sub>)</div>
+          </div>
+
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Magnitud</th>
+                <th>Expresión</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Altura sobre el suelo</td>
+                <td>h</td>
+                <td id="tablaAltura">50,0 m</td>
+              </tr>
+              <tr>
+                <td>Energía potencial</td>
+                <td>E<sub>p</sub> = m·g·h</td>
+                <td id="tablaEp">490,0 J</td>
+              </tr>
+              <tr>
+                <td>Energía cinética</td>
+                <td>E<sub>c</sub> = 1/2·m·v²</td>
+                <td id="tablaEk">0,0 J</td>
+              </tr>
+              <tr>
+                <td>Energía mecánica</td>
+                <td>E<sub>mec</sub> = E<sub>c</sub> + E<sub>p</sub></td>
+                <td id="tablaEm">490,0 J</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Cómo usar este recurso en clase</h2>
+      <ul style="font-size:0.9rem; padding-left:18px; margin-top:8px;">
+        <li>Pide al alumnado que describa qué ocurre con E<sub>p</sub>, E<sub>c</sub> y E<sub>mec</sub> al deslizar el control.</li>
+        <li>Haz que escriban la expresión de cada energía y comprueben numéricamente la conservación de E<sub>mec</sub> = E<sub>c</sub> + E<sub>p</sub>.</li>
+        <li>Plantea preguntas tipo: «¿En qué punto la energía cinética es máxima? ¿Y la potencial?»</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Parámetros físicos
+    const g = 9.8;      // m/s^2
+    const m = 1.0;      // kg
+    const H = 50.0;     // m
+    const EmConst = m * g * H;
+
+    // Elementos del DOM
+    const slider = document.getElementById('posSlider');
+    const alturaTexto = document.getElementById('alturaTexto');
+    const barEp = document.getElementById('barEp');
+    const barEk = document.getElementById('barEk');
+    const barEm = document.getElementById('barEm');
+    const valEp = document.getElementById('valEp');
+    const valEk = document.getElementById('valEk');
+    const valEm = document.getElementById('valEm');
+    const tablaAltura = document.getElementById('tablaAltura');
+    const tablaEp = document.getElementById('tablaEp');
+    const tablaEk = document.getElementById('tablaEk');
+    const tablaEm = document.getElementById('tablaEm');
+
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d');
+
+    function formatNumber(x) {
+      return x.toFixed(1).replace('.', ',');
+    }
+
+    function drawScene(frac) {
+      // frac: 0 top, 1 bottom
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Cielo
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+      skyGrad.addColorStop(0, '#e3f2fd');
+      skyGrad.addColorStop(1, '#bbdefb');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Suelo
+      const groundY = h - 40;
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(0, groundY, w, h - groundY);
+
+      // Edificio
+      const buildingWidth = 120;
+      const buildingHeight = h - 80;
+      const buildingX = 60;
+      const buildingY = groundY - buildingHeight;
+      ctx.fillStyle = '#90a4ae';
+      ctx.fillRect(buildingX, buildingY, buildingWidth, buildingHeight);
+
+      // Ventanas
+      ctx.fillStyle = '#eceff1';
+      const rows = 4;
+      const cols = 3;
+      const padX = 12, padY = 14;
+      const winW = 20, winH = 18;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const wx = buildingX + padX + c * (winW + 8);
+          const wy = buildingY + padY + r * (winH + 10);
+          ctx.fillRect(wx, wy, winW, winH);
+        }
+      }
+
+      // Trayectoria (línea de caída)
+      const pathX = buildingX + buildingWidth + 60;
+      ctx.strokeStyle = '#3949ab';
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(pathX, buildingY + 10);
+      ctx.lineTo(pathX, groundY - 5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Mono dibujado con polígonos (estilo "bajo poli")
+      const topY = buildingY + 15;
+      const bottomY = groundY - 20;
+      const monoY = topY + (bottomY - topY) * frac;
+      const monoX = pathX;
+
+      // Cuerpo (triángulo)
+      ctx.fillStyle = '#ffb74d';
+      ctx.beginPath();
+      ctx.moveTo(monoX, monoY);
+      ctx.lineTo(monoX - 18, monoY + 34);
+      ctx.lineTo(monoX + 18, monoY + 34);
+      ctx.closePath();
+      ctx.fill();
+
+      // Cabeza (polígono aproximado)
+      ctx.fillStyle = '#ffe0b2';
+      ctx.beginPath();
+      ctx.moveTo(monoX, monoY - 26);
+      ctx.lineTo(monoX - 14, monoY - 16);
+      ctx.lineTo(monoX - 12, monoY - 2);
+      ctx.lineTo(monoX, monoY + 4);
+      ctx.lineTo(monoX + 12, monoY - 2);
+      ctx.lineTo(monoX + 14, monoY - 16);
+      ctx.closePath();
+      ctx.fill();
+
+      // Orejas
+      ctx.fillStyle = '#ffcc80';
+      ctx.beginPath();
+      ctx.moveTo(monoX - 16, monoY - 18);
+      ctx.lineTo(monoX - 22, monoY - 26);
+      ctx.lineTo(monoX - 10, monoY - 24);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(monoX + 16, monoY - 18);
+      ctx.lineTo(monoX + 22, monoY - 26);
+      ctx.lineTo(monoX + 10, monoY - 24);
+      ctx.closePath();
+      ctx.fill();
+
+      // Brazos
+      ctx.strokeStyle = '#ffb74d';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(monoX, monoY + 6);
+      ctx.lineTo(monoX - 20, monoY + 20);
+      ctx.moveTo(monoX, monoY + 6);
+      ctx.lineTo(monoX + 20, monoY + 20);
+      ctx.stroke();
+
+      // Piernas
+      ctx.beginPath();
+      ctx.moveTo(monoX - 6, monoY + 34);
+      ctx.lineTo(monoX - 12, monoY + 52);
+      ctx.moveTo(monoX + 6, monoY + 34);
+      ctx.lineTo(monoX + 12, monoY + 52);
+      ctx.stroke();
+
+      // Carita simple
+      ctx.fillStyle = '#5d4037';
+      ctx.beginPath();
+      ctx.arc(monoX - 4, monoY - 16, 2, 0, Math.PI * 2);
+      ctx.arc(monoX + 4, monoY - 16, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(monoX - 4, monoY - 10);
+      ctx.quadraticCurveTo(monoX, monoY - 6, monoX + 4, monoY - 10);
+      ctx.strokeStyle = '#5d4037';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Textos
+      ctx.fillStyle = '#1a237e';
+      ctx.font = '12px system-ui';
+      ctx.fillText('H = 50 m', buildingX + 8, buildingY + 14);
+      ctx.fillText('Energía mecánica constante', 18, 22);
+    }
+
+    function update() {
+      const t = parseFloat(slider.value) / 100; // 0 → arriba, 1 → abajo
+      const hActual = H * (1 - t);             // altura sobre el suelo
+      const Ep = m * g * hActual;
+      const Ek = EmConst - Ep;                 // equivalente a 1/2·m·v²
+      const Em = EmConst;
+
+      const EpPct = Ep / EmConst * 100;
+      const EkPct = Ek / EmConst * 100;
+
+      barEp.style.height = EpPct + '%';
+      barEk.style.height = EkPct + '%';
+      barEm.style.height = '100%';
+
+      alturaTexto.textContent = 'h = ' + formatNumber(hActual) + ' m';
+
+      valEp.innerHTML = 'E<sub>p</sub> = ' + formatNumber(Ep) + ' J';
+      valEk.innerHTML = 'E<sub>c</sub> = ' + formatNumber(Ek) + ' J';
+      valEm.innerHTML = 'E<sub>mec</sub> = ' + formatNumber(Em) + ' J';
+
+      tablaAltura.textContent = formatNumber(hActual) + ' m';
+      tablaEp.textContent = formatNumber(Ep) + ' J';
+      tablaEk.textContent = formatNumber(Ek) + ' J';
+      tablaEm.textContent = formatNumber(Em) + ' J';
+
+      drawScene(t);
+    }
+
+    slider.addEventListener('input', update);
+    window.addEventListener('load', update);
+  </script>
+</body>
+</html>

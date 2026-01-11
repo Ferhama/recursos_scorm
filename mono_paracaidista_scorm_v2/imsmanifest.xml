@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="MONO_PARACAIDISTA_SCORM" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2
+                      imscp_rootv1p1p2.xsd
+                      http://www.adlnet.org/xsd/adlcp_rootv1p2
+                      adlcp_rootv1p2.xsd">
+  <organizations default="ORG-MONO">
+    <organization identifier="ORG-MONO">
+      <title>Conservación de la energía mecánica - Mono paracaidista</title>
+      <item identifier="ITEM-MONO" identifierref="RES-MONO" isvisible="true">
+        <title>Mono paracaidista sin paracaídas</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-MONO" type="webcontent" adlcp:scormType="sco" href="index.html">
+      <file href="index.html" />
+    </resource>
+  </resources>
+</manifest>
