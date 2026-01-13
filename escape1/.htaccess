@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /escape1/
+
+# Asegura que la URL termine con una barra "/" solo si no es un archivo
+#RewriteCond %{REQUEST_URI} !/$
+#RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]{2,4}$ [NC]
+#RewriteRule ^(.*)$ https://www.fernandoharo.es/escape1/$1/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

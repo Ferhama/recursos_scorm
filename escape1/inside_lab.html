@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dentro del Laboratorio</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Ancho máximo de la imagen */
+            margin: auto;
+        }
+        .mapped-image {
+            width: 100%; /* Hacer que la imagen sea responsive */
+            height: auto;
+        }
+    </style>
+    <script>
+        let noteRead = false; // Variable que indica si la nota ha sido leída
+
+        function showBottleMessage() {
+            alert("Для следующей подсказки вам нужно найти элемент с символом Ag");
+            noteRead = true; // La nota ha sido leída
+        }
+
+        function askForElement() {
+            if (noteRead) {
+                let answer = prompt("¿De qué elemento son estas monedas?");
+                if (answer.toLowerCase() === "plata" || answer.toLowerCase() === "silver" || answer.toLowerCase() == "ag") {
+                    window.location.href = "periodic_table.html"; // Redirige a la siguiente pantalla
+                } else {
+                    alert("Respuesta incorrecta. Inténtalo de nuevo.");
+                }
+            } else {
+                alert("Necesitas más información.");
+            }
+        }
+
+        function showElement(element) {
+            alert("Descripción: " + element);
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/laboratorio.png" alt="Laboratorio de Mendeleev" usemap="#labMap" class="mapped-image">
+
+        <map name="labMap">
+            <!-- Área de la Botella de Vodka -->
+            <area shape="rect" data-coords="455,545,589,715" alt="Botella de Vodka" onclick="showBottleMessage()">
+            <!-- Área de las Monedas -->
+            <area shape="rect" data-coords="407,948,521,1016" alt="Monedas" onclick="askForElement()">
+            <!-- Área del Libro 1 (Listado de alumnos) -->
+            <area shape="rect" data-coords="547,937,893,1017" alt="Listado de Alumnos" onclick="showElement('Listado de alumnos de Mendeleev: \n 1. Ivan Petrov,\n 2. Nikolai Ivanov,\n 3. Alexei Smirnov,\n 4. Maria Kuznetsova,\n 5. Olga Sokolova...')">
+            <!-- Área del Libro 2 (Fórmula del fósforo) -->
+            <area shape="rect" data-coords="53,789,357,949" alt="Fórmula del Fósforo" onclick="showElement('Fórmula para aislar el elemento fósforo')">
+            <!-- Área del Microscopio -->
+            <area shape="rect" data-coords="791,275,851,603" alt="Microscopio" onclick="showElement('Antiguo microscopio usado por Mendeleev')">
+            <!-- Área del Matraz -->
+            <area shape="rect" data-coords="901,403,1013,517" alt="Matraz" onclick="showElement('Matraz con restos de experimentos químicos')">
+        </map>
+    </div>
+</body>
+</html>

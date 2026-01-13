@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío de Extracción</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .section {
+            margin-top: 20px;
+            width: 40%;
+            border: 1px solid #000;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+
+        .section h2 {
+            margin-bottom: 10px;
+        }
+
+        .compound {
+            margin: 10px 0;
+        }
+
+        .compound label {
+            display: inline-block;
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .compound input[type="number"] {
+            width: 50px;
+            margin-left: 10px;
+        }
+
+        .compound input[type="checkbox"] {
+            margin-left: 5px;
+        }
+
+        .compound input[type="number"]:disabled {
+            background-color: #e0e0e0;
+        }
+
+        .result {
+            margin-top: 10px;
+            font-weight: bold;
+            color: green;
+        }
+
+        .error {
+            margin-top: 10px;
+            font-weight: bold;
+            color: red;
+        }
+
+        .hint {
+            margin-top: 10px;
+            font-weight: bold;
+            color: blue;
+        }
+
+        .next-button {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .next-button[disabled] {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        p {
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Extracción de Cafeína</h1>
+        <div class="embudo-container">
+            <img src="media/embudo.png" alt="Embudo decantación" class="image">
+        </div>
+        <p>Rick ha caído en un profundo letargo, disponemos de una extraña mezcla de cafeína y cloroformo. Necesitamos extraer la cafeína en una disolución polar para revertir su condición. Usa un embudo de decantación para realizar las extracciones necesarias.</p>
+        <div class="section">
+            <h2>Extracción 1</h2>
+            <div class="compound">
+                <label for="cafeina">Cafeína + Cloroformo:</label>
+                <input type="checkbox" id="cafeinaCheckbox" onclick="toggleInput('cafeina')">
+                <input type="number" id="cafeina" value="100" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="glicerina1">Glicerina:</label>
+                <input type="checkbox" id="glicerina1Checkbox" onclick="toggleInput('glicerina1')">
+                <input type="number" id="glicerina1" min="0" max="100" value="0" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="alcohol1">Alcohol:</label>
+                <input type="checkbox" id="alcohol1Checkbox" onclick="toggleInput('alcohol1')">
+                <input type="number" id="alcohol1" min="0" max="100" value="0" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="agua1">Agua:</label>
+                <input type="checkbox" id="agua1Checkbox" onclick="toggleInput('agua1')">
+                <input type="number" id="agua1" min="0" max="100" value="0" disabled>% 
+            </div>
+            <button onclick="verifyExtraction1()">Verificar Extracción 1</button>
+            <div id="result1" class="result"></div>
+            <div id="error1" class="error"></div>
+            <div id="hint1" class="hint"></div>
+        </div>
+
+        <div id="extraction2" class="section" style="display: none;">
+            <h2>Extracción 2</h2>
+            <div class="compound">
+                <label for="glicerina2">Glicerina + Cafeína:</label>
+                <input type="checkbox" id="glicerina2Checkbox" onclick="toggleInput('glicerina2')">
+                <input type="number" id="glicerina2" value="100" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="cloroformo2">Cloroformo:</label>
+                <input type="checkbox" id="cloroformo2Checkbox" onclick="toggleInput('cloroformo2')">
+                <input type="number" id="cloroformo2" value="0" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="alcohol2">Alcohol:</label>
+                <input type="checkbox" id="alcohol2Checkbox" onclick="toggleInput('alcohol2')">
+                <input type="number" id="alcohol2" min="0" max="100" value="0" disabled>% 
+            </div>
+            <div class="compound">
+                <label for="agua2">Agua:</label>
+                <input type="checkbox" id="agua2Checkbox" onclick="toggleInput('agua2')">
+                <input type="number" id="agua2" min="0" max="100" value="0" disabled>% 
+            </div>
+            <button onclick="verifyExtraction2()">Verificar Extracción 2</button>
+            <div id="result2" class="result"></div>
+            <div id="error2" class="error"></div>
+            <div id="hint2" class="hint"></div>
+        </div>
+
+        <button id="nextButton" class="next-button" onclick="nextLevel()">Continuar</button>
+    </div>
+
+    <script>
+        function toggleInput(id) {
+            const input = document.getElementById(id);
+            input.disabled = !input.disabled;
+            if (input.disabled) {
+                input.value = 0;
+            }
+        }
+
+        function verifyExtraction1() {
+            const cafeina = parseInt(document.getElementById("cafeina").value) || 0;
+            const glicerina1 = parseInt(document.getElementById("glicerina1").value) || 0;
+            const alcohol1 = parseInt(document.getElementById("alcohol1").value) || 0;
+            const agua1 = parseInt(document.getElementById("agua1").value) || 0;
+
+            const total = cafeina + glicerina1 + alcohol1 + agua1;
+
+    if (total !== 100) {
+        document.getElementById("error1").innerText = "La suma debe ser 100%.";
+        document.getElementById("result1").innerText = "";
+        document.getElementById("hint1").innerText = "";
+    } else if (cafeina > 0 && glicerina1 > 0 && alcohol1 === 0 && agua1 === 0) {
+        if (cafeina <= 30 && glicerina1 >= 70) {
+            document.getElementById("result1").innerText = "¡Primera extracción completada con éxito, la cafeína pasó a la glicerina!";
+            document.getElementById("error1").innerText = "";
+            document.getElementById("hint1").innerText = "";
+            document.getElementById("extraction2").style.display = "block";
+        } else {
+            document.getElementById("result1").innerText = "";
+            document.getElementById("error1").innerText = "";
+            document.getElementById("hint1").innerText = generateHint1(cafeina, glicerina1);
+        }
+    } else {
+        document.getElementById("error1").innerText = "Combinación incorrecta. Inténtalo de nuevo.";
+        document.getElementById("result1").innerText = "";
+        document.getElementById("hint1").innerText = generateHint1(cafeina, glicerina1, alcohol1, agua1);
+    }
+}
+
+        function generateHint1(cafeina, glicerina1) {
+            if (cafeina > 30) return "Disminuye la concentración de Cafeína.";
+            if (cafeina < 30) return "Aumenta la concentración de Cafeína.";
+            if (glicerina1 < 70) return "Aumenta la concentración de Glicerina.";
+            if (glicerina1 > 70) return "Disminuye la concentración de Glicerina.";
+            return "Revisa tus porcentajes.";
+        }
+
+    function verifyExtraction2() {
+        const glicerina2 = parseInt(document.getElementById("glicerina2").value) || 0;
+        const cloroformo2 = parseInt(document.getElementById("cloroformo2").value) || 0;
+        const alcohol2 = parseInt(document.getElementById("alcohol2").value) || 0;
+        const agua2 = parseInt(document.getElementById("agua2").value) || 0;
+
+        const total = glicerina2 + cloroformo2 + alcohol2 + agua2;
+
+    if (total !== 100) {
+        document.getElementById("error2").innerText = "La suma debe ser 100%.";
+        document.getElementById("result2").innerText = "";
+        document.getElementById("hint2").innerText = "";
+    } else if (cloroformo2 === 0) {
+        // Si no hay cloroformo, verificamos las concentraciones de los demás componentes
+        if (alcohol2 >= 15 && agua2 >= 35 && glicerina2 >= 50) {
+            document.getElementById("result2").innerText = "¡Extracción finalizada con éxito!";
+            document.getElementById("error2").innerText = "";
+            document.getElementById("hint2").innerText = "";
+            document.getElementById("nextButton").style.display = "block";
+        } else {
+            document.getElementById("result2").innerText = "";
+            document.getElementById("error2").innerText = "";
+            document.getElementById("hint2").innerText = generateHint2(glicerina2, alcohol2, agua2);
+        }
+    } else {
+        document.getElementById("error2").innerText = "Combinación incorrecta. Inténtalo de nuevo.";
+        document.getElementById("result2").innerText = "";
+        document.getElementById("hint2").innerText = "";
+        }
+    }
+
+    function generateHint2(glicerina2, alcohol2, agua2) {
+        let hints = [];
+
+        if (glicerina2 < 50) hints.push("Aumenta la concentración de Glicerina.");
+        if (glicerina2 > 50) hints.push("Disminuye la concentración de Glicerina.");
+        if (alcohol2 < 15) hints.push("Aumenta la concentración de Alcohol.");
+        if (alcohol2 > 15) hints.push("Disminuye la concentración de Alcohol.");
+        if (agua2 < 35) hints.push("Aumenta la concentración de Agua.");
+        if (agua2 > 35) hints.push("Disminuye la concentración de Agua.");
+
+        return hints.join(" ");
+    }
+
+        function nextLevel() {
+            window.location.href = 'genoma.html';
+        }
+    </script>
+</body>
+</html>

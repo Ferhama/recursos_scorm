@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala Metálica</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .oven-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            overflow: hidden;
+        }
+
+        .oven-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .temperature-display {
+            position: absolute;
+            top: 29.5%; /* Ajusta la posición vertical */
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(15deg); /* Rotar e inclinar el display */
+            background-color: #333;
+            color: #fff;
+            padding: 3px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .slider-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .slider-container input {
+            width: 100%;
+        }
+
+        .colada-display {
+            margin-top: 20px;
+            width: 100px;
+            height: 80px;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+        }
+
+        .metal-layer {
+            width: 100%;
+            height: 20px;
+            background-color: grey;
+            margin-top: 0px; 
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 8px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .popup button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #24325FFF;
+            color: #FAFD7CFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #69C8ECFF;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .temperature-display {
+                font-size: 16px;
+                padding: 3px 10px;
+            }
+
+            .slider-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="oven-container">
+            <img src="media/horno.png" alt="Horno de Fundición" class="oven-image">
+            <div id="temperatureDisplay" class="temperature-display">0°C</div>
+        </div>
+
+        <div class="controls">
+            <div>
+                <label for="metalSelector">Selecciona un metal:</label>
+                <select id="metalSelector">
+                    <option value="Ti">Titanio</option>
+                    <option value="Au">Oro</option>
+                    <option value="W">Tungsteno</option>
+                    <option value="Ag">Plata</option>
+                </select>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="temperatureSlider" min="0" max="3500" step="10" value="0">
+                <span id="sliderValue">0°C</span>
+            </div>
+            <button id="pourButton" onclick="pourMetal()">Verter Colada</button>
+            <div id="message" class="error-message"></div>
+        </div>
+
+        <div class="colada-display" id="coladaDisplay">
+            <!-- Las capas de metal se mostrarán aquí -->
+        </div>
+
+        <button id="nextButton" class="solve-button" onclick="window.location.href='extraccion1.html'" disabled>Continuar</button>
+    </div>
+
+    <div id="popup" class="popup">
+        <h2>Instrucciones para el Enigma</h2>
+        <p>Debes crear un lingote con cuatro capas de metal. Comienza con el metal de mayor punto de fusión y termina con el de menor punto de fusión. Si viertes un metal con un punto de fusión mayor sobre uno con un punto de fusión menor, la capa inferior se derretirá y deberás comenzar de nuevo.</p>
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+    
+    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+
+    <script>
+        const metals = {
+            "Ti": { name: "Titanio", meltingPoint: 1668, color: "#B0B0B0" },
+            "Au": { name: "Oro", meltingPoint: 1064, color: "#FFD700" },
+            "W": { name: "Tungsteno", meltingPoint: 3422, color: "#4B4B4B" },
+            "Ag": { name: "Plata", meltingPoint: 962, color: "#C0C0C0" }
+        };
+
+        let currentTemperature = 0;
+        let layers = [];
+
+        document.getElementById("temperatureSlider").addEventListener("input", function() {
+            currentTemperature = this.value;
+            document.getElementById("sliderValue").textContent = `${currentTemperature}°C`;
+            document.getElementById("temperatureDisplay").textContent = `${currentTemperature}°C`;
+        });
+
+        function pourMetal() {
+            const selectedMetal = document.getElementById("metalSelector").value;
+            const metal = metals[selectedMetal];
+
+            if (currentTemperature >= metal.meltingPoint) {
+                if (layers.length === 0 || currentTemperature < metals[layers[layers.length - 1]].meltingPoint) {
+                    layers.push(selectedMetal);
+                    displayLayer(metal);
+                    if (layers.length === 4) {
+                        document.getElementById("nextButton").disabled = false;
+                        document.getElementById("message").textContent = "¡Combinación correcta!";
+                        document.getElementById("message").classList.remove("error-message");
+                        document.getElementById("message").classList.add("success-message");
+                    }
+                } else {
+                    document.getElementById("message").textContent = `La colada del metal ${metal.name} ha fundido la capa de metal ${metals[layers[layers.length - 1]].name}. ¡Empieza de nuevo!`;
+                    resetLayers();
+                }
+            } else {
+                document.getElementById("message").textContent = `La temperatura no es suficiente para fundir ${metal.name}.`;
+            }
+        }
+
+        function displayLayer(metal) {
+            const layer = document.createElement("div");
+            layer.classList.add("metal-layer");
+            layer.style.backgroundColor = metal.color;
+            document.getElementById("coladaDisplay").appendChild(layer);
+        }
+
+        function resetLayers() {
+            layers = [];
+            document.getElementById("coladaDisplay").innerHTML = "";
+            document.getElementById("nextButton").disabled = true;
+        }
+    </script>
+
+    <script>
+        function openPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+    
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    
+        document.querySelector('.oven-image').addEventListener('click', openPopup);
+    </script>
+</body>
+</html>

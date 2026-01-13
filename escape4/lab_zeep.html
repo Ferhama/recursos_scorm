@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Zeep - Reacciones Químicas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('media/lab_esteq.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .map-area {
+            position: absolute;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .map-area:hover {
+            border-color: yellow;
+        }
+
+        #screen1 {
+            top: 6%;
+            left: 3%;
+            width: 20%;
+            height: 20%;
+        }
+
+        #screen2 {
+            top: 12%;
+            left: 67%;
+            width: 18%;
+            height: 20%;
+        }
+
+        #zeep-info {
+            top: 20%;
+            left: 46%;
+            width: 12%;
+            height: 25%;
+        }
+
+        /* Popup estilo holográfico */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(23, 57, 73, 0.7); /* Fondo más oscuro */
+            padding: 20px;
+            border: 2px solid #00FFFF;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            z-index: 1000;
+            color: #FAFD7CFF;
+            font-size: 18px;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+        }
+
+        .popup label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .popup input[type="range"] {
+            width: 100%;
+            max-width: 90%;
+        }
+
+        .popup input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #00FFFF;
+        }
+
+        .close-popup {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #24325FFF;
+            color: #FAFD7CFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close-popup:hover {
+            background-color: #69C8ECFF;
+        }
+
+        /* Efecto de fallo */
+        .fail-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .fail-overlay.active {
+            display: block;
+            animation: flicker 0.1s infinite;
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .popup {
+                width: 90%;
+                font-size: 16px;
+            }
+
+            .popup input[type="range"],
+            .popup input[type="number"] {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="screen1" class="map-area" onclick="showPopup()"></div>
+    <div id="screen2" class="map-area" onclick="showPopup()"></div>
+    <div id="zeep-info" class="map-area" onclick="showZeepInfo()"></div>
+
+    <!-- Popup para la pantalla interactiva -->
+    <div id="popup" class="popup">
+        <h2>Reacción Química</h2>
+        <p>Zn + 2 HCl → ZnCl₂ + H₂  ( P=1 atm, T=0ºC )</p>
+        <label for="hclVolume">Volumen de HCl 2M (mL): <span id="hclVolumeLabel">50</span></label>
+        <input type="range" id="hclVolume" min="0" max="100" value="50" oninput="updateLabels()">
+        
+        <label for="zincMass">Masa de Zinc (g): <span id="zincMassLabel">20</span></label>
+        <input type="range" id="zincMass" min="0" max="100" value="20" oninput="updateLabels()">
+        
+        <p>Introduzca la cantidad de hidrógeno producido (L):</p>
+        <input type="number" id="hydrogenVolume" placeholder="0.00" step="0.01">
+        
+        <button class="close-popup" onclick="validateAnswer()">Validar</button>
+    </div>
+
+    <!-- Superposición de error -->
+    <div id="failOverlay" class="fail-overlay"></div>
+
+    <!-- Sonido de fallo -->
+    <audio id="failSound" src="media/nooo.mp3"></audio>
+
+    <script>
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function showZeepInfo() {
+            alert('Zeep Xanflorp está intentando usar hidrógeno como combustible. Ayúdalo a ajustar la reacción.');
+        }
+
+        function updateLabels() {
+            const hclVolume = document.getElementById('hclVolume').value;
+            const zincMass = document.getElementById('zincMass').value;
+
+            document.getElementById('hclVolumeLabel').innerText = hclVolume;
+            document.getElementById('zincMassLabel').innerText = zincMass;
+        }
+
+        function validateAnswer() {
+        const hclVolume = document.getElementById('hclVolume').value;
+        const zincMass = document.getElementById('zincMass').value;
+        let hydrogenVolume = document.getElementById('hydrogenVolume').value;
+
+        // Convertir a flotante y redondear a 2 decimales
+        hydrogenVolume = parseFloat(parseFloat(hydrogenVolume).toFixed(2));
+
+        const molZn = zincMass / 65.38; // Moles de Zn
+        const molHCl = (hclVolume / 1000) * 2; // Moles de HCl (2M)
+        const molH2 = Math.min(molZn, molHCl / 2); // Reactivo limitante
+
+        const expectedH2 = parseFloat((molH2 * 22.4).toFixed(2)); // Volumen de H2 en L (a 0°C y 1 atm)
+
+        if (hydrogenVolume === expectedH2) {
+            // Mostrar el mensaje de correcto y esperar la confirmación del usuario
+            if (confirm('¡Correcto! Pulsa "Aceptar" para continuar.')) {
+                window.location.href = 'galvanica.html';
+            }
+        } else {
+            document.getElementById('failOverlay').classList.add('active');
+            document.getElementById('failSound').play();
+            setTimeout(() => {
+                document.getElementById('failOverlay').classList.remove('active');
+            }, 1000);
+        }
+    }
+    </script>
+</body>
+</html>

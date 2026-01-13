@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma de Estequiometría - Volumen de Hidrógeno</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            text-align: center;
+            background-color: #A6EEE6FF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .reaction-info {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #24325FFF;
+        }
+
+        .input-field {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #24325FFF;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #submitAnswer {
+            padding: 10px 20px;
+            background-color: #24325FFF;
+            color: #FAFD7CFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitAnswer:hover {
+            background-color: #69C8ECFF;
+        }
+
+        .result {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body onload="showGameInstructions()">
+    <div class="container">
+        <div class="reaction-info">
+            <p><strong>Reacción Química:</strong> Zn + 2HCl → ZnCl₂ + H₂</p>
+            <p><strong>Masa de Zinc disponible:</strong> 65 g</p>
+            <p><strong>Volumen de HCl 2M disponible:</strong> 500 mL</p>
+            <p>Calcula el volumen de hidrógeno generado a 25°C y 1 atm de presión.</p>
+        </div>
+
+        <input type="text" id="hydrogenVolume" class="input-field" placeholder="Introduce el volumen en litros">
+        <button id="submitAnswer" onclick="checkAnswer()">Enviar Respuesta</button>
+
+        <div class="result" id="resultMessage"></div>
+    </div>
+
+    <script>
+        function showGameInstructions() {
+            alert(
+                "Instrucciones del juego:\n\n" +
+                "Zeep está experimentando con una serie de reacciones para producir hidrógeno y utilizarlo como combustible para alimentar la batería de Rick. " +
+                "Tu tarea es formular y ajustar correctamente las reacciones y luego calcular el volumen de hidrógeno generado en la reacción más conveniente.\n\n" +
+                "En este enigma, debes determinar si las proporciones de reactivos son correctas y calcular el volumen de hidrógeno que se genera a 25°C y 1 atm de presión. " +
+                "¡Buena suerte!"
+            );
+        }
+
+        function checkAnswer() {
+            const correctVolume = 24.5; // Este es el volumen de H₂ a 25°C y 1 atm calculado (debes calcularlo tú con base en los reactivos)
+            const userAnswer = parseFloat(document.getElementById('hydrogenVolume').value);
+
+            if (Math.abs(userAnswer - correctVolume) < 0.1) {
+                document.getElementById('resultMessage').innerHTML = "¡Correcto! Has calculado el volumen de hidrógeno correctamente.";
+                document.getElementById('resultMessage').style.color = "green";
+            } else {
+                document.getElementById('resultMessage').innerHTML = "Respuesta incorrecta. Revisa tus cálculos y vuelve a intentarlo.";
+                document.getElementById('resultMessage').style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

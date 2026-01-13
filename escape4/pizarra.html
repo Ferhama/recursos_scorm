@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizarra - Reacciones Químicas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FAF48BFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #A6EEE6FF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 1024px;
+            height: 90%;
+        }
+
+        .chalkboard-frame {
+            background-color: #8B4513;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .chalkboard {
+            background-color: #2F4F4F;
+            border-radius: 5px;
+            height: calc(100% - 3px);
+            width: calc(100% - 3px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .reaction-container {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .reaction-text {
+            color: #FAFD7CFF;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .reaction {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FAFD7CFF;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .reaction input[type="text"] {
+            margin: 0 3px;
+            padding: 3px;
+            border-radius: 5px;
+            border: 1px solid #24325FFF;
+            width: 60px;
+            max-width: 60px;
+            text-align: center;
+        }
+
+        #nextEnigmaButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #24325FFF;
+            color: #FAFD7CFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: none;
+        }
+
+        #nextEnigmaButton:hover {
+            background-color: #69C8ECFF;
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .reaction-text {
+                font-size: 12px;
+            }
+            .reaction {
+                font-size: 12px;
+            }
+            .reaction input[type="text"] {
+                width: 40px;
+                max-width: 40px;
+            }
+            .container {
+                padding: 10px;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body onload="showGameInstructions()">
+    <div class="container">
+        <div class="chalkboard-frame">
+            <div class="chalkboard">
+                <div class="reaction-container">
+                    <div class="reaction-text">Ácido clorhídrico + Zinc → Cloruro de Zinc + Hidrógeno</div>
+                    <div class="reaction">
+                        <input type="text" id="reactant2" placeholder="HCl"> + 
+                        <input type="text" id="reactant1" placeholder="Zn"> →
+                        <input type="text" id="product1" placeholder="ZnCl2"> + 
+                        <input type="text" id="product2" placeholder="H2">
+                    </div>
+                </div>
+                <div class="reaction-container">
+                    <div class="reaction-text">Ácido clorhídrico + Aluminio → Cloruro de Aluminio + Hidrógeno</div>
+                    <div class="reaction">
+                        <input type="text" id="reactant4" placeholder=""> + 
+                        <input type="text" id="reactant3" placeholder=""> →
+                        <input type="text" id="product3" placeholder=""> + 
+                        <input type="text" id="product4" placeholder="">
+                    </div>
+                </div>
+
+                <div class="reaction-container">
+                    <div class="reaction-text">Ácido sulfúrico + Hierro → Sulfato de hierro (II) + Hidrógeno</div>
+                    <div class="reaction">
+                        <input type="text" id="reactant6" placeholder=""> + 
+                        <input type="text" id="reactant5" placeholder=""> →
+                        <input type="text" id="product5" placeholder=""> + 
+                        <input type="text" id="product6" placeholder="">
+                    </div>
+                </div>
+
+                <div class="reaction-container">
+                    <div class="reaction-text">Ácido clorhídrico + Magnesio → Cloruro de Magnesio + Hidrógeno</div>
+                    <div class="reaction">
+                        <input type="text" id="reactant8" placeholder=""> + 
+                        <input type="text" id="reactant7" placeholder=""> →
+                        <input type="text" id="product7" placeholder=""> + 
+                        <input type="text" id="product8" placeholder="">
+                    </div>
+                </div>
+
+                <div class="reaction-container">
+                    <div class="reaction-text">Ácido nítrico + Plomo → Nitrato de Plomo (II) + Hidrógeno</div>
+                    <div class="reaction">
+                        <input type="text" id="reactant10" placeholder=""> + 
+                        <input type="text" id="reactant9" placeholder=""> →
+                        <input type="text" id="product9" placeholder=""> + 
+                        <input type="text" id="product10" placeholder="">
+                    </div>
+                </div>
+
+                <!-- Añadir más reacciones según sea necesario -->
+            </div>
+        </div>
+
+        <!-- Botón para validar las fórmulas -->
+        <button id="validateButton" onclick="validateAllReactions()">Validar Fórmulas</button>
+        
+        <!-- Botón para pasar al siguiente enigma -->
+        <button id="nextEnigmaButton" onclick="goToNextEnigma()">Siguiente Enigma</button>
+    </div>
+
+    <script>
+        const correctFormulas = [
+            { reactants: ["Zn", "2HCl"], products: ["ZnCl2", "H2"] },
+            { reactants: ["2Al", "6HCl"], products: ["2AlCl3", "3H2"] },
+            { reactants: ["Fe", "H2SO4"], products: ["FeSO4", "H2"] },
+            { reactants: ["Mg", "2HCl"], products: ["MgCl2", "H2"] },
+            { reactants: ["Pb", "2HNO3"], products: ["Pb(NO3)2", "H2"] }
+        ];
+
+        function validateAllReactions() {
+            let correctAnswers = 0;
+
+            // Validar cada fórmula
+            for (let i = 0; i < correctFormulas.length; i++) {
+                const reactants = correctFormulas[i].reactants;
+                const products = correctFormulas[i].products;
+
+                const userReactant1 = document.getElementById(`reactant${i * 2 + 1}`).value.trim();
+                const userReactant2 = document.getElementById(`reactant${i * 2 + 2}`).value.trim();
+                const userProduct1 = document.getElementById(`product${i * 2 + 1}`).value.trim();
+                const userProduct2 = document.getElementById(`product${i * 2 + 2}`).value.trim();
+
+                // Comprobar si la fórmula es correcta
+                                // Comprobar si la fórmula es correcta
+                                if (userReactant1 === reactants[0] && userReactant2 === reactants[1] && userProduct1 === products[0] && userProduct2 === products[1]) {
+                    document.querySelectorAll('.reaction')[i].style.color = 'green';
+                    correctAnswers++;
+                } else {
+                    document.querySelectorAll('.reaction')[i].style.color = 'red';
+                }
+            }
+
+            // Si todas las respuestas son correctas, mostrar el botón para el siguiente enigma
+            if (correctAnswers === correctFormulas.length) {
+                document.getElementById('nextEnigmaButton').style.display = 'block';
+            } else {
+                document.getElementById('nextEnigmaButton').style.display = 'none';
+            }
+        }
+
+        function goToNextEnigma() {
+            window.location.href = 'lab_zeep.html'; // Cambiar por la URL del siguiente enigma
+        }
+
+        function showGameInstructions() {
+            alert(
+                "Instrucciones del juego:\n\n" +
+                "Zeep está experimentando con varias reacciones químicas para producir hidrógeno, un gas que puede ser utilizado como combustible. " +
+                "Su objetivo es generar suficiente hidrógeno para alimentar la batería de Rick, pero su conocimiento en química es limitado. " +
+                "Necesitas ayudar a Zeep formulando y ajustando correctamente las reacciones químicas involucradas.\n\n" +
+                "Tu tarea es revisar las reacciones propuestas, asegurarte de que están formuladas y ajustadas correctamente, " +
+                "y luego decidir cuál de ellas es la más eficiente para la producción de hidrógeno.\n\n" +
+                "¡Buena suerte!"
+            );
+        }
+    </script>
+</body>
+</html>

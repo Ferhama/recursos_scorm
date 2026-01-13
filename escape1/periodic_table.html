@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Periódica - Mendeleiev</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Ancho máximo de la imagen */
+            margin: auto;
+        }
+        .mapped-image {
+            width: 100%; /* Hacer que la imagen sea responsive */
+            height: auto;
+        }
+    </style>
+    <script>
+        const elementos = {
+            'Li': {
+                propiedades: "Masa atómica: 6.94 u\nPropiedades: Reacciona vigorosamente con el agua formando hidróxido de litio (LiOH) y gas hidrógeno (H2).\nFórmula: Óxido (Li2O)"
+            },
+            'C': {
+                propiedades: "Masa atómica: 12.01 u\nPropiedades: Forma compuestos como el metano (CH4) y el dióxido de carbono (CO2) con el hidrógeno y el oxígeno.\nFórmulas: Hidruro (CH4), Óxido (CO2)"
+            },
+            'O': {
+                propiedades: "Masa atómica: 16.00 u\nPropiedades: Es altamente reactivo y forma óxidos con casi todos los elementos, como el agua (H2O).\nFórmulas: Óxido (O2-)"
+            },
+            'S': {
+                propiedades: "Masa atómica: 32.06 u\nPropiedades: Reacciona con el hidrógeno para formar ácido sulfhídrico (H2S) y con el oxígeno para formar trióxido de azufre (SO3).\nFórmulas: Hidruro (H2S), Óxido (SO3)"
+            },
+            'Al': {
+                propiedades: "Masa atómica: 26.98 u\nPropiedades: Forma óxidos como el óxido de aluminio (Al2O3).\nFórmula: Óxido (Al2O3)"
+            }
+        };
+
+        function mostrarPropiedades(elemento) {
+            alert(elementos[elemento].propiedades);
+        }
+
+        function resolverTabla() {
+            let respuesta = prompt("Introduce la palabra formada por los elementos:");
+            if (respuesta.toLowerCase() === "licosal") {
+                window.location.href = "noble_gases_enigma.html"; // Cambia la URL a la página del siguiente enigma
+            } else {
+                alert("Respuesta incorrecta. Inténtalo de nuevo.");
+            }
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/tabla.png" alt="Tabla Periódica de Mendeleiev" usemap="#tableMap" class="mapped-image">
+
+        <map name="tableMap">
+            <!-- Elementos en la parte inferior -->
+            <area shape="rect" data-coords="599,901,697,1022" alt="Li" href="#" onclick="mostrarPropiedades('Li')">
+            <area shape="rect" data-coords="724,901,833,1022" alt="C" href="#" onclick="mostrarPropiedades('C')">
+            <area shape="rect" data-coords="474,901,576,1022" alt="O" href="#" onclick="mostrarPropiedades('O')">
+            <area shape="rect" data-coords="227,901,323,1022" alt="S" href="#" onclick="mostrarPropiedades('S')">
+            <area shape="rect" data-coords="354,901,451,1022" alt="Al" href="#" onclick="mostrarPropiedades('Al')">
+        </map>
+
+        <button class="solve-button" onclick="resolverTabla()">Resolver la Tabla</button>
+    </div>
+</body>
+</html>

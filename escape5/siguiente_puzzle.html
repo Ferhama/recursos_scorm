@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estructura del Carbono</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Enlazar tu archivo de estilos existente -->
+    <style>
+        /* Estilos específicos para esta página */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .atom-image {
+            width: 40%;
+            height: auto;
+            display: block;
+            margin: 20px auto; /* Añadido margen superior e inferior */
+        }
+
+        .electron-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .electron {
+            width: 40px;
+            height: 40px;
+            background-color: transparent; /* Hacemos transparente el fondo */
+            cursor: grab;
+            margin: 10px;
+            user-select: none;
+            font-size: 24px;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        .orbital-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .orbital {
+            border: 2px solid #24325FFF;
+            border-radius: 10px;
+            width: 200px;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+            background-color: rgba(166, 238, 230, 0.8);
+            margin: 10px;
+        }
+
+        .orbital h3 {
+            margin-top: 0;
+            background-color: #FAF48BFF;
+            padding: 5px 10px;
+            border-radius: 5px;
+            position: absolute;
+            top: -25px;
+            left: 10px;
+        }
+
+        .orbital-dropzone {
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 2px dashed #69C8ECFF;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .solve-button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-bottom: 20px; /* Añadido margen inferior */
+        }
+
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 768px) {
+            .electron {
+                width: 30px;
+                height: 30px;
+                margin: 5px;
+                font-size: 20px;
+                line-height: 30px;
+            }
+
+            .orbital {
+                width: 150px;
+            }
+
+            .orbital h3 {
+                font-size: 0.9em;
+            }
+
+            .solve-button {
+                font-size: 1.2em;
+                padding: 15px 25px;
+            }
+
+            /* Ajuste del tamaño del texto para móviles */
+            h1 {
+                font-size: 1.5em;
+            }
+
+            p {
+                font-size: 1em;
+                padding: 0 5px; /* Añadido padding lateral */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Estructura Electrónica del Átomo de Carbono</h1>
+        <p>Arrastra los electrones a los orbitales correspondientes para construir la configuración electrónica del carbono, siguiendo el Principio de Hund. Usa las flechas para indicar el espín de los electrones.</p>
+
+        <img src="media/lab2.png" alt="Estructura del Carbono" class="atom-image">
+
+        <!-- Electrones disponibles -->
+        <div class="electron-container">
+            <div class="electron" draggable="true" id="e1" data-spin="up">↑</div>
+            <div class="electron" draggable="true" id="e2" data-spin="down">↓</div>
+            <div class="electron" draggable="true" id="e3" data-spin="up">↑</div>
+            <div class="electron" draggable="true" id="e4" data-spin="up">↑</div>
+            <div class="electron" draggable="true" id="e5" data-spin="up">↑</div>
+            <div class="electron" draggable="true" id="e6" data-spin="up">↑</div>
+        </div>
+
+        <!-- Orbitales -->
+        <div class="orbital-container">
+            <!-- Orbital 1s -->
+            <div class="orbital">
+                <h3>1s</h3>
+                <div class="orbital-dropzone" data-orbital="1s" data-capacidad="2" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </div>
+            <!-- Orbital 2s -->
+            <div class="orbital">
+                <h3>2s</h3>
+                <div class="orbital-dropzone" data-orbital="2s" data-capacidad="2" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </div>
+            <!-- Orbitales 2p -->
+            <div class="orbital">
+                <h3>2pₓ</h3>
+                <div class="orbital-dropzone" data-orbital="2p1" data-capacidad="2" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </div>
+            <div class="orbital">
+                <h3>2pᵧ</h3>
+                <div class="orbital-dropzone" data-orbital="2p2" data-capacidad="2" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </div>
+            <div class="orbital">
+                <h3>2p_z</h3>
+                <div class="orbital-dropzone" data-orbital="2p3" data-capacidad="2" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para verificar -->
+        <button class="solve-button" onclick="verificar()">Verificar Configuración</button>
+    </div>
+
+    <script>
+        // Funciones de arrastrar y soltar
+        const electrons = document.querySelectorAll('.electron');
+        electrons.forEach(electron => {
+            electron.addEventListener('dragstart', drag);
+        });
+
+        function drag(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text/plain");
+            const electron = document.getElementById(data);
+            if (event.target.classList.contains('orbital-dropzone')) {
+                const capacidad = parseInt(event.target.getAttribute('data-capacidad'));
+                if (event.target.children.length < capacidad) {
+                    // Verificar espines existentes en el orbital
+                    const electronSpin = electron.getAttribute('data-spin');
+                    let spinAllowed = true;
+                    event.target.querySelectorAll('.electron').forEach(existingElectron => {
+                        if (existingElectron.getAttribute('data-spin') === electronSpin) {
+                            spinAllowed = false;
+                        }
+                    });
+                    if (spinAllowed) {
+                        event.target.appendChild(electron);
+                        electron.style.position = 'relative';
+                        electron.style.top = '0';
+                        electron.style.left = '0';
+                    } else {
+                        alert('No puedes agregar dos electrones con el mismo espín en un orbital.');
+                    }
+                } else {
+                    alert('Este orbital ya está completo.');
+                }
+            }
+        }
+
+        function verificar() {
+            // Definimos la configuración electrónica correcta con spin
+            const configuracionCorrecta = {
+                '1s': ['up', 'down'],
+                '2s': ['up'],
+                '2p1': ['up'],
+                '2p2': ['up'],
+                '2p3': ['up']
+            };
+
+            let configuracionUsuario = {
+                '1s': [],
+                '2s': [],
+                '2p1': [],
+                '2p2': [],
+                '2p3': []
+            };
+
+            // Verificamos la distribución de los electrones y sus spins
+            const dropzones = document.querySelectorAll('.orbital-dropzone');
+            dropzones.forEach(dropzone => {
+                const orbital = dropzone.getAttribute('data-orbital');
+                const electronsInDropzone = dropzone.querySelectorAll('.electron');
+                electronsInDropzone.forEach(electron => {
+                    const spin = electron.getAttribute('data-spin');
+                    configuracionUsuario[orbital].push(spin);
+                });
+            });
+
+            // Comparar configuraciones
+            let correcta = true;
+            for (let orbital in configuracionCorrecta) {
+                // Ordenamos los arrays para comparar sin importar el orden
+                const correctSpins = configuracionCorrecta[orbital].slice().sort();
+                const userSpins = configuracionUsuario[orbital].slice().sort();
+                if (correctSpins.length !== userSpins.length) {
+                    correcta = false;
+                    break;
+                }
+                for (let i = 0; i < correctSpins.length; i++) {
+                    if (correctSpins[i] !== userSpins[i]) {
+                        correcta = false;
+                        break;
+                    }
+                }
+                if (!correcta) {
+                    break;
+                }
+            }
+
+            if (correcta) {
+                alert('¡Correcto! Has configurado el átomo de carbono correctamente siguiendo el Principio de Hund y el Principio de Exclusión de Pauli.');
+                // Avanzar al siguiente puzzle o mostrar más información
+                window.location.href = 'siguiente_puzzle.html'; // Cambia esto a la URL correspondiente
+            } else {
+                alert('La configuración no es correcta. Por favor, revisa la distribución de los electrones en los orbitales, asegurándote de seguir el Principio de Hund y el Principio de Exclusión de Pauli.');
+            }
+        }
+    </script>
+</body>
+</html>

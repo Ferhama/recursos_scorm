@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lluvia de Valencias</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #87ceeb;
+        }
+
+        #cursor {
+            position: absolute;
+            bottom: 50px; /*altura de la cabeza de Rick*/
+            left: 50%;
+            width: 80px;
+            height: 88px;
+            background-image: url('media/rick.png');
+            background-size: cover;
+            background-position: center;
+            transform: translateX(-50%);
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: #000;
+        }
+
+        #message {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: red;
+            display: none;
+        }
+
+        #valenciaDisplay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 62px; /* Tamaño de letra grande */
+            font-weight: bold;
+            color: transparent; /* Texto transparente */
+            -webkit-text-stroke: 2px #1A5276; /* Contorno azul oscuro */
+            z-index: 0; /* Coloca el texto detrás de los elementos que caen */
+            pointer-events: none; /* Evita que el texto interfiera con los clics */
+            opacity: 0.8; /* Hace el contorno un poco más visible */
+        }
+
+        #timer {
+            position: absolute;
+            top: 20px;
+            right: 50%;
+            transform: translateX(50%);
+            font-size: 24px;
+            color: #000;
+        }
+
+                /* Estilos para pantallas más pequeñas */
+        @media (max-width: 600px) {
+            #score, #valenciaDisplay, #timer {
+                font-size: 18px; /* Reducir el tamaño del texto */
+            }
+
+            #timer {
+                top: auto;
+                top: 20px; /* Mover el cronómetro hacia abajo */
+            }
+
+            #valenciaDisplay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 26px; /* Tamaño de letra grande */
+            font-weight: bold;
+            color: transparent; /* Texto transparente */
+            -webkit-text-stroke: 2px #1A5276; /* Contorno azul oscuro */
+            z-index: 0; /* Coloca el texto detrás de los elementos que caen */
+            pointer-events: none; /* Evita que el texto interfiera con los clics */
+            opacity: 0.8; /* Hace el contorno un poco más visible */
+            }
+
+            #message {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+            display: none;
+        }
+        }
+
+    </style>
+</head>
+<body>
+<audio id="successSound" src="media/plop.wav" preload="auto"></audio>
+<div id="gameCanvas"></div>
+<div id="cursor"></div>
+<div id="score">Puntos: 0</div>
+<div id="valenciaDisplay">Valencia: +3</div>
+<div id="message"></div>
+<div id="timer">Tiempo: 0:00</div>
+
+<script>
+    const elements = [
+        // Grupo 1 (Metales alcalinos)
+        { symbol: 'Li', valencias: [1] },
+        { symbol: 'Na', valencias: [1] },
+        { symbol: 'K', valencias: [1] },
+        { symbol: 'Rb', valencias: [1] },
+        { symbol: 'Cs', valencias: [1] },
+        { symbol: 'Fr', valencias: [1] },
+
+        // Grupo 2 (Metales alcalinotérreos)
+        { symbol: 'Be', valencias: [2] },
+        { symbol: 'Mg', valencias: [2] },
+        { symbol: 'Ca', valencias: [2] },
+        { symbol: 'Sr', valencias: [2] },
+        { symbol: 'Ba', valencias: [2] },
+        { symbol: 'Ra', valencias: [2] },
+
+        // Grupo 13 (Boroides)
+        { symbol: 'B', valencias: [3] },
+        { symbol: 'Al', valencias: [3] },
+        { symbol: 'Ga', valencias: [3] },
+        { symbol: 'In', valencias: [3] },
+        { symbol: 'Tl', valencias: [1, 3] },
+
+        // Grupo 14 (Carbonoides)
+        { symbol: 'C', valencias: [4, -4] },
+        { symbol: 'Si', valencias: [4] },
+        { symbol: 'Ge', valencias: [2, 4] },
+        { symbol: 'Sn', valencias: [2, 4] },
+        { symbol: 'Pb', valencias: [2, 4] },
+
+        // Grupo 15 (Nitrogenoides)
+        { symbol: 'N', valencias: [-3, 3, 5] },
+        { symbol: 'P', valencias: [3, 5] },
+        { symbol: 'As', valencias: [3, 5] },
+        { symbol: 'Sb', valencias: [3, 5] },
+        { symbol: 'Bi', valencias: [3, 5] },
+
+        // Grupo 16 (Calcógenos)
+        { symbol: 'O', valencias: [-2] },
+        { symbol: 'S', valencias: [-2, 2, 4, 6] },
+        { symbol: 'Se', valencias: [-2, 4, 6] },
+        { symbol: 'Te', valencias: [-2, 4, 6] },
+        { symbol: 'Po', valencias: [2, 4, 6] },
+
+        // Grupo 17 (Halógenos)
+        { symbol: 'F', valencias: [-1] },
+        { symbol: 'Cl', valencias: [-1, 1, 3, 5, 7] },
+        { symbol: 'Br', valencias: [-1, 1, 3, 5, 7] },
+        { symbol: 'I', valencias: [-1, 1, 3, 5, 7] },
+        { symbol: 'At', valencias: [1, 3, 5, 7] },
+
+        // Grupo 18 (Gases nobles)
+        { symbol: 'He', valencias: [0] },
+        { symbol: 'Ne', valencias: [0] },
+        { symbol: 'Ar', valencias: [0] },
+        { symbol: 'Kr', valencias: [0, 2] },
+        { symbol: 'Xe', valencias: [0, 2, 4, 6] },
+        { symbol: 'Rn', valencias: [0, 2, 6] }
+    ];
+
+    let score = 0;
+    let targetValencia = 3;
+    const targetScore = 100;
+    let gameFinished = false;  // Variable para controlar si el juego ha terminado
+
+    function createElement() {
+        if (gameFinished) return;  // No crear más elementos si el juego ha terminado
+
+        const element = elements[Math.floor(Math.random() * elements.length)];
+        const elementDiv = document.createElement('div');
+        elementDiv.textContent = element.symbol;
+        elementDiv.style.position = 'absolute';
+        elementDiv.style.left = `${Math.random() * 90}%`;
+        elementDiv.style.top = '0';
+        elementDiv.style.fontSize = '24px';
+        elementDiv.style.fontWeight = 'bold';
+        elementDiv.dataset.valencias = JSON.stringify(element.valencias);
+        elementDiv.classList.add('falling-element');
+        document.getElementById('gameCanvas').appendChild(elementDiv);
+
+        moveElement(elementDiv);
+    }
+
+    function moveElement(elementDiv) {
+        let position = 0;
+        const interval = setInterval(() => {
+            if (gameFinished) {
+                clearInterval(interval);
+                return;  // No mover elementos si el juego ha terminado
+            }
+            if (position >= window.innerHeight - 50) {
+                clearInterval(interval);
+                elementDiv.remove();
+            } else {
+                position += 10;
+                elementDiv.style.top = `${position}px`;
+                checkCollision(elementDiv);
+            }
+        }, 50);
+    }
+
+    function checkCollision(elementDiv) {
+        const cursor = document.getElementById('cursor');
+        const rect1 = elementDiv.getBoundingClientRect();
+        const rect2 = cursor.getBoundingClientRect();
+
+        if (!(rect1.right < rect2.left || 
+            rect1.left > rect2.right || 
+            rect1.bottom < rect2.top || 
+            rect1.top > rect2.bottom)) {
+
+            const valencias = JSON.parse(elementDiv.dataset.valencias);
+            const successSound = document.getElementById('successSound'); // Referencia al audio
+
+            if (valencias.includes(targetValencia)) {
+                score += 5;
+                showMessage('Bien!', 'green');
+                successSound.currentTime = 0; // Asegura que el sonido se reproduzca desde el principio
+                successSound.play().catch(error => console.error(error)); // Reproduce el sonido al acertar
+            } else {
+                score -= 2;
+                showMessage('Noooo!', 'red', elementDiv.textContent, valencias); // Muestra las valencias correctas
+            }
+
+            updateScore();
+            elementDiv.remove();
+        }
+    }
+
+    function updateScore() {
+        document.getElementById('score').textContent = `Puntos: ${score}`;
+        if (score >= targetScore && !gameFinished) {
+            gameFinished = true;  // Establecer que el juego ha terminado
+            stopTimer(); // Detiene el cronómetro
+
+            setTimeout(() => {
+                alert('¡Has ganado! Nivel completado.');
+                nextChallenge(); // Redirige al siguiente desafío
+            }, 500); // Retardo antes de redirigir para asegurar que todas las acciones se completen
+        }
+    }
+
+    function showMessage(text, color, element = '', valencias = []) {
+        const messageDiv = document.getElementById('message');
+        if (valencias.length > 0) {
+            messageDiv.innerHTML = `${text} <br> Valencia ${element}: ${valencias.join(', ')}`;
+        } else {
+            messageDiv.textContent = text;
+        }
+        messageDiv.style.color = color;
+        messageDiv.style.display = 'block';
+
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 2000);
+    }
+
+
+    function updateValencia() {
+        const allValencias = [...new Set(elements.flatMap(element => element.valencias))];
+        targetValencia = allValencias[Math.floor(Math.random() * allValencias.length)];
+        document.getElementById('valenciaDisplay').textContent = `Valencia: ${targetValencia > 0 ? '+' : ''}${targetValencia}`;
+    }
+
+    document.addEventListener('mousemove', (event) => {
+        const cursor = document.getElementById('cursor');
+        cursor.style.left = `${event.clientX - 40}px`;
+    });
+
+    let timerInterval;
+    let timeElapsed = 0;
+    let elementCreationTime = 0;
+    let valenciaChangeTime = 0;
+
+    function startGameTimer() {
+        timerInterval = setInterval(() => {
+            timeElapsed++;
+
+            // Actualiza el cronómetro cada segundo
+            const timerDisplay = document.getElementById('timer');
+            const minutes = Math.floor(timeElapsed / 60);
+            const seconds = timeElapsed % 60;
+            timerDisplay.textContent = `Tiempo: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            // Crea un nuevo elemento cada segundo
+            if (timeElapsed - elementCreationTime >= 1) {
+                createElement();
+                elementCreationTime = timeElapsed;
+            }
+
+            // Cambia la valencia cada 10 segundos
+            if (timeElapsed - valenciaChangeTime >= 10) {
+                updateValencia();
+                valenciaChangeTime = timeElapsed;
+            }
+
+            // Verifica si el juego ha terminado
+            if (score >= targetScore) {
+                stopTimer();
+                alert('¡Has ganado! Nivel completado.');
+                clearInterval(timerInterval);
+                nextChallenge();
+            }
+
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+            // Escuchar eventos de movimiento de ratón y toque
+        document.addEventListener('mousemove', (event) => {
+            moveCursor(event.clientX);
+        });
+
+        document.addEventListener('touchmove', (event) => {
+            moveCursor(event.touches[0].clientX);
+        });
+
+        function moveCursor(xPosition) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.left = `${xPosition - 40}px`;
+        }
+
+        function nextChallenge() {
+            console.log("Redirigiendo al siguiente desafío...");
+            window.location.href = 'drogueria.html';
+        }
+
+        function showGameInstructions() {
+            alert("¡Bienvenido al Juego de Lluvia de Valencias!\n\nInstrucciones:\n1. Verás caer elementos con diferentes valencias.\n2. Usa el cursor o toca la pantalla para capturar los elementos con la valencia objetivo.\n3. Gana 5 puntos por cada acierto y pierde 2 puntos por cada error.\n4. El juego termina cuando alcanzas 100 puntos o más.\n\n¡Buena suerte!");
+        }
+
+        showGameInstructions();
+
+        // Inicia el juego
+        startGameTimer();
+
+</script>
+
+</body>
+</html>

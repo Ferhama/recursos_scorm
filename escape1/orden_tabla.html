@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenar Elementos - Mendeleiev</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function resolverEnigma() {
+            let respuesta = prompt("Ordena los elementos del cuaderno según el grupo IV, V, VI y VII, separados por un espacio en blanco:");
+            if (respuesta.toLowerCase() === "sn sb te i") {
+                alert("¡Correcto! Has ordenado los elementos correctamente.");
+                window.location.href = "escritorio.html"; // Redirige a la página del siguiente enigma
+            } else {
+                alert("Respuesta incorrecta. Inténtalo de nuevo.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Resuelve el Enigma</h1>
+        <img src="media/hojas.png" alt="Pistas del Cuaderno de Mendeleiev" class="mapped-image">
+
+        <button class="solve-button" onclick="resolverEnigma()">Resolver el Enigma</button>
+    </div>
+</body>
+</html>

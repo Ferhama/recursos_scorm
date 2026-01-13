@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puerta Iónica</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function showItemMessage(item) {
+            alert("Descripción: " + item);
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Ancho original de la imagen
+            var scaleY = imgHeight / 1000; // Alto original de la imagen
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+
+        function openPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function checkSolutions() {
+            const solutions = [
+                "NaCl", "NaF", "Na2S", 
+                "KCl", "KF", "K2S", 
+                "MgCl2", "MgF2", "MgS"
+            ];
+
+            let userInputs = [];
+            for (let i = 1; i <= 9; i++) {
+                let userInput = document.getElementById(`solution${i}`).value.trim();
+                if (userInputs.includes(userInput) || !solutions.includes(userInput)) {
+                    alert("¡Respuesta incorrecta o repetida! Inténtalo de nuevo.");
+                    return;
+                }
+                userInputs.push(userInput);
+            }
+
+            // Ordenar ambas listas alfabéticamente y comparar
+            userInputs.sort();
+            solutions.sort();
+
+            if (userInputs.join() === solutions.join()) {
+                window.location.href = "puerta_cristal.html";
+            } else {
+                alert("¡Respuesta incorrecta! Asegúrate de haber incluido todas las sales correctas.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/ionicroom.png" alt="Sala Iónica" usemap="#ionicMap" class="mapped-image">
+        <map name="ionicMap">
+            <!-- Mapear las urnas con cationes y aniones -->
+            <area shape="rect" data-coords="41,530,113,622" alt="Cation Na⁺" onclick="showItemMessage('Cation Na⁺ seleccionado')">
+            <area shape="rect" data-coords="141,560,189,630" alt="Cation K⁺" onclick="showItemMessage('Cation K⁺ seleccionado')">
+            <area shape="rect" data-coords="201,580,241,636" alt="Cation Mg²⁺" onclick="showItemMessage('Cation Mg²⁺ seleccionado')">
+            <area shape="rect" data-coords="907,554,959,634" alt="Anion Cl⁻" onclick="showItemMessage('Anion Cl⁻ seleccionado')">
+            <area shape="rect" data-coords="851,570,889,632" alt="Anion S²⁻" onclick="showItemMessage('Anion S²⁻ seleccionado')">
+            <area shape="rect" data-coords="803,580,837,632" alt="Anion F⁻" onclick="showItemMessage('Anion F⁻ seleccionado')">
+            <!-- Matraz con agua -->
+            <area shape="rect" data-coords="21,762,150,972" alt="Matraz con Agua" onclick="showItemMessage('Matraz con agua seleccionado')">
+            <!-- Puerta -->
+            <area shape="rect" data-coords="399,318,657,624" alt="Puerta fuertemente electrificada" onclick="showItemMessage('Puerta fuertemente electrificada, Peligro de alto voltaje!')">
+        </map>
+        <button class="solve-button" onclick="openPopup()">Resolver el Enigma</button>
+    </div>
+
+    <div id="popup" class="popup">
+        <h3>Introduce las 9 sales que es posible formar:</h3>
+        <input type="text" id="solution1" placeholder="Solución 1">
+        <input type="text" id="solution2" placeholder="Solución 2">
+        <input type="text" id="solution3" placeholder="Solución 3">
+        <input type="text" id="solution4" placeholder="Solución 4">
+        <input type="text" id="solution5" placeholder="Solución 5">
+        <input type="text" id="solution6" placeholder="Solución 6">
+        <input type="text" id="solution7" placeholder="Solución 7">
+        <input type="text" id="solution8" placeholder="Solución 8">
+        <input type="text" id="solution9" placeholder="Solución 9">
+        <button class="solve-button" onclick="checkSolutions()">Verificar</button>
+        <button class="solve-button" onclick="closePopup()">Cerrar</button>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+</body>
+</html>

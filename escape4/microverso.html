@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microverso - Laboratorio</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 1792px;
+            margin: auto;
+            position: relative;
+        }
+
+        .mapped-image {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Aquí se definen las posiciones absolutas de las áreas del mapa */
+        .map-area {
+            position: absolute;
+            cursor: pointer;
+        }
+
+        #zeep-info {
+            top: 20%;
+            left: 10%;
+            width: 10%;
+            height: 45%;
+        }
+
+        #metals {
+            top: 90%;
+            left: 40%;
+            width: 20%;
+            height: 15%;
+        }
+
+        #acids {
+            top: 60%;
+            left: 70%;
+            width: 15%;
+            height: 10%;
+        }
+
+        #flask {
+            top: 40%;
+            left: 40%;
+            width: 20%;
+            height: 20%;
+        }
+
+        #chalkboard {
+            top: 15%;
+            left: 70%;
+            width: 20%;
+            height: 15%;
+        }
+
+        /* Estilos para el popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fefefe;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 8px;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .popup img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #24325FFF;
+            color: #FAFD7CFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #69C8ECFF;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="media/labcomic.png" alt="Laboratorio del Microverso" class="mapped-image">
+        <div id="zeep-info" class="map-area" onclick="visitArea('zeep-info')"></div>
+        <div id="metals" class="map-area" onclick="visitArea('metals')"></div>
+        <div id="acids" class="map-area" onclick="visitArea('acids')"></div>
+        <div id="flask" class="map-area" onclick="visitArea('flask')"></div>
+        <div id="chalkboard" class="map-area" onclick="goToChalkboard()"></div>
+    </div>
+
+    <!-- Overlay para el popup -->
+    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+
+    <!-- Contenedor del popup -->
+    <div id="popup" class="popup">
+        <img src="media/extraerh2.png" alt="Montaje correcto para extraer H2">
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+
+    <!-- Aquí incluiré los scripts de JavaScript -->
+    <script>
+        // Función para marcar un área como visitada en localStorage
+        function visitArea(area) {
+            localStorage.setItem(area, 'visited');
+            switch (area) {
+                case 'zeep-info':
+                    showZeepInfo();
+                    break;
+                case 'metals':
+                    showMetals();
+                    break;
+                case 'acids':
+                    showAcids();
+                    break;
+                case 'flask':
+                    showFlask();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function showZeepInfo() {
+            alert('Zeep Xanflorp: Es un habitante del microverso que intenta generar energía utilizando reacciones químicas. Pero su conocimiento es limitado y necesita tu ayuda.');
+        }
+
+        function showMetals() {
+            alert('Metales disponibles: Zn, Al, Fe, Mg. Estos metales se utilizan en reacciones con ácidos para generar hidrógeno.');
+        }
+
+        function showAcids() {
+            alert('Ácidos disponibles: Ácido sulfúrico (H2SO4) y Ácido clorhídrico (HCl). Estos ácidos pueden reaccionar con los metales para producir gas hidrógeno.');
+        }
+
+        function showFlask() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function goToChalkboard() {
+            if (visitedAllAreas()) {
+                window.location.href = 'pizarra.html';
+            } else {
+                alert('Visita primero todas las áreas para avanzar.');
+            }
+        }
+
+        // Función para verificar si todas las áreas fueron visitadas
+        function visitedAllAreas() {
+            const areas = ['zeep-info', 'metals', 'acids', 'flask'];
+            return areas.every(area => localStorage.getItem(area) === 'visited');
+        }
+
+        // Inicialización: verificar si todas las áreas están marcadas al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            if (visitedAllAreas()) {
+                document.getElementById('chalkboard').style.border = '2px solid green';
+            }
+        });
+    </script>
+</body>
+</html>

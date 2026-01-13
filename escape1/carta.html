@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta de Mendeleiev</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function resolverEnigma() {
+            let respuesta = prompt("¿Cuál es el elemento actual que corresponde a la predicción que Mendeleiev llamó 'eka-silicio'?");
+            if (respuesta.toLowerCase() === "germanio" || respuesta.toLowerCase() === "ge") {
+                alert("¡Correcto! El elemento es el Germanio.");
+                window.location.href = "final.html"; // Redirige a la pantalla final
+            } else {
+                alert("Respuesta incorrecta. Inténtalo de nuevo.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Carta de Mendeleiev</h1>
+        <img src="media/carta.png" alt="Carta de Mendeleiev" class="mapped-image">
+
+        <button class="solve-button" onclick="resolverEnigma()">Resolver el Enigma</button>
+    </div>
+</body>
+</html>

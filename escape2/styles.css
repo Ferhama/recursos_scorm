@@ -1,0 +1,140 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FAF48BFF; /* Fondo general */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column; /* Para alinear en columna */
+}
+
+.container {
+    text-align: center;
+    background-color: #A6EEE6FF; /* Color de fondo del contenedor */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Asegura que todo dentro del contenedor esté centrado */
+}
+
+.video {
+    max-width: 100%;
+    border: 5px solid #FB6467FF; /* Borde del video */
+    border-radius: 5px;
+}
+
+.text-container {
+    margin-top: 20px;
+}
+
+.text-main {
+    color: #82491EFF; /* Color del texto principal */
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.text-secondary {
+    color: #E762D7FF; /* Color del texto secundario */
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.start-button {
+    background-color: #24325FFF; /* Color del botón */
+    color: #FAFD7CFF; /* Color del texto del botón */
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.start-button:hover {
+    background-color: #69C8ECFF; /* Color del botón al pasar el ratón */
+}
+
+/* Estilos para la tabla periódica */
+
+.mapped-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Estilos para el botón de resolver enigmas */
+.solve-button {
+    background-color: #24325FFF; /* Color del botón */
+    color: #FAFD7CFF; /* Color del texto del botón */
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px; /* Margen superior para separar del contenido anterior */
+    align-self: center; /* Asegura que el botón esté centrado */
+}
+
+.solve-button:hover {
+    background-color: #69C8ECFF; /* Color del botón al pasar el ratón */
+}
+
+/* Estilos específicos para la pantalla de enigma de los gases nobles */
+.text-main {
+    color: #82491EFF; /* Color del texto principal */
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center; /* Centrar el texto */
+}
+
+h1 {
+    color: #24325FFF; /* Color del título */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Estilos adicionales para el popup y overlay */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 8px;
+    max-width: 80%;
+    text-align: center;
+}
+
+.popup button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #24325FFF;
+    color: #FAFD7CFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background-color: #69C8ECFF;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}

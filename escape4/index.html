@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a la Aventura</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <video id="introVideo" class="video" src="media/intro.mp4" autoplay controls></video>
+
+        <div class="text-container dialogue" id="dialogue" style="display: none;">
+            <p class="text-main"><strong>Rick:</strong> Maldita sea, Morty. Esta cosa no tiene ni una pizca de energía. ¡No hay forma de que el vehículo se mueva sin la batería funcionando!</p>
+            <p class="text-secondary"><strong>Morty:</strong> ¿Qué, qué vamos a hacer, Rick? ¿Vamos a quedarnos atrapados aquí?</p>
+            <p class="text-main"><strong>Rick:</strong> Tranquilo, Morty, no es la primera vez que pasa algo así. ¿Ves esto? Dentro de esta batería hay un microverso, una civilización completa generando energía para nosotros. Pero parece que han dejado de hacer su trabajo.</p>
+            <p class="text-secondary"><strong>Morty:</strong> ¿Un microverso? ¿Te refieres a que hay... gente viviendo ahí dentro, produciendo energía?</p>
+            <p class="text-main"><strong>Rick:</strong> Sí, Morty, ¿recuerdas la última vez que hicimos esto? Una civilización entera, trabajando sin saber que todo lo que hacen es para alimentar mi batería. ¡Y ahora parece que han decidido tomarse unas vacaciones!</p>
+            <p class="text-secondary"><strong>Morty:</strong> ¿Vamos a entrar ahí otra vez? Rick, la última vez que casi...</p>
+            <p class="text-main"><strong>Rick:</strong> Sí, sí, casi te haces pipí en los pantalones, lo sé. Pero necesitamos esa energía, Morty. Sin ella, no hay forma de salir de aquí, y me niego a quedarme atrapado en este basurero de realidad.</p>
+            <p class="text-secondary"><strong>Morty:</strong> Está bien, Rick... pero prométeme que no haremos explotar nada esta vez.</p>
+            <p class="text-main"><strong>Rick:</strong> Promesas, promesas, Morty. Solo sigue mi ejemplo y todo saldrá... más o menos bien. Ahora, agarra tu cinturón de seguridad mental, porque vamos a hacer una visita sorpresa al microverso. ¡Vamos allá!</p>
+        </div>
+
+        <button id="startButton" class="start-button" style="display: none;" onclick="startAdventure()">Iniciar Aventura</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('introVideo');
+        const dialogue = document.getElementById('dialogue');
+        const startButton = document.getElementById('startButton');
+
+        video.onended = function() {
+            dialogue.style.display = 'block';
+            startButton.style.display = 'inline-block';
+        };
+
+        function startAdventure() {
+            window.location.href = 'microverso.html';
+        }
+    </script>
+</body>
+</html>

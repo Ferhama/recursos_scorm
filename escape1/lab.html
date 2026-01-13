@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Mendeleev</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Ancho máximo de la imagen */
+            margin: auto;
+        }
+        .mapped-image {
+            width: 100%; /* Hacer que la imagen sea responsive */
+            height: auto;
+        }
+    </style>
+    <script>
+        function showNote() {
+            alert("Para poder entrar en el laboratorio es necesario el número atómico de los 4 primeros elementos, de los grupos impares, del segundo periodo de la tabla periódica");
+        }
+
+        function openLock() {
+            var code = prompt("Introduce la combinación para abrir el candado:");
+            if (code === "3579") {
+                window.location.href = "inside_lab.html"; // Cambia "inside_lab.html" por la página que quieras que cargue
+            } else {
+                alert("¡Combinación incorrecta! Inténtalo de nuevo.");
+            }
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/puerta.png" alt="Puerta del laboratorio" usemap="#labMap" class="mapped-image">
+
+        <map name="labMap">
+            <!-- Área de la Nota -->
+            <area shape="rect" data-coords="477,387,591,481" alt="Nota" onclick="showNote()">
+            <!-- Área del Candado -->
+            <area shape="rect" data-coords="639,477,667,577" alt="Candado" onclick="openLock()">
+        </map>
+    </div>
+</body>
+</html>

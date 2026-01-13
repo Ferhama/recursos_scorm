@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorio del Carbono - Puzzle 2</title>
+    <style>
+        body {
+            background-image: url('media/laboratorio.jpg');
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #hidrocarburos, #cadena {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
+        .hidrocarburo {
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(128, 0, 128, 0.7);
+            border-radius: 5px;
+            cursor: grab;
+        }
+        #cadena {
+            margin-top: 50px;
+            border: 2px dashed #fff;
+            padding: 20px;
+            min-height: 100px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .espacio {
+            margin: 5px;
+            padding: 10px;
+            background-color: rgba(0, 0, 128, 0.7);
+            border-radius: 5px;
+            min-width: 100px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Completa la Cadena de Hidrocarburos</h1>
+    <p>Arrastra los hidrocarburos a los espacios para completar la cadena en orden correcto.</p>
+    <div id="hidrocarburos">
+        <!-- Lista de hidrocarburos para arrastrar -->
+        <div class="hidrocarburo" draggable="true" id="etano">Etano (C₂H₆)</div>
+        <div class="hidrocarburo" draggable="true" id="eteno">Eteno (C₂H₄)</div>
+        <div class="hidrocarburo" draggable="true" id="etino">Etino (C₂H₂)</div>
+        <div class="hidrocarburo" draggable="true" id="propano">Propano (C₃H₈)</div>
+        <div class="hidrocarburo" draggable="true" id="propeno">Propeno (C₃H₆)</div>
+        <div class="hidrocarburo" draggable="true" id="propino">Propino (C₃H₄)</div>
+    </div>
+    <div id="cadena">
+        <!-- Espacios donde colocar los hidrocarburos -->
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="etano"></div>
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="eteno"></div>
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="etino"></div>
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="propano"></div>
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="propeno"></div>
+        <div class="espacio" ondragover="allowDrop(event)" ondrop="drop(event)" data-correct="propino"></div>
+    </div>
+    <button onclick="verificarCadena()">Verificar Cadena</button>
+
+    <script>
+        // Funciones de arrastrar y soltar
+        const hidrocarburos = document.querySelectorAll('.hidrocarburo');
+        hidrocarburos.forEach(hidrocarburo => {
+            hidrocarburo.addEventListener('dragstart', drag);
+        });
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            // Verificar si el espacio ya tiene un hidrocarburo
+            if (event.target.children.length === 0) {
+                event.target.appendChild(document.getElementById(data));
+            }
+        }
+
+        // Verificación de la cadena
+        function verificarCadena() {
+            const espacios = document.querySelectorAll('.espacio');
+            let correcto = true;
+            espacios.forEach(espacio => {
+                const expected = espacio.getAttribute('data-correct');
+                if (espacio.children.length === 0 || espacio.children[0].id !== expected) {
+                    correcto = false;
+                }
+            });
+
+            if (correcto) {
+                alert('¡Excelente! Has completado la cadena correctamente.');
+                // Aquí puedes agregar código para avanzar al siguiente puzzle
+            } else {
+                alert('La cadena no es correcta. Por favor, revisa el orden de los hidrocarburos.');
+            }
+        }
+    </script>
+</body>
+</html>

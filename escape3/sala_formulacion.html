@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cámara de Formulación</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .door {
+            position: relative;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        .mapped-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .chemical-symbols {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chemical-symbols button {
+            position: absolute;
+            width: 5vw;
+            height: 5vw;
+            max-width: 30px;
+            max-height: 30px;
+            font-size: 1.4vw;
+            background-color: white;
+            border: 2px solid #000;
+            border-radius: 50%;
+            cursor: pointer;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #H { top: 6.8%; left: 30.5%; }
+        #Cl { top: 22.2%; left: 30.5%; }
+        #Na { top: 37.8%; left: 30.5%; }
+        #Al { top: 22.2%; left: 68%; }
+        #Fe { top: 57%; left: 30.5%; }
+        #S { top: 57%; left: 68%; }
+        #Be { top: 37.8%; left: 68%; }
+        #O { top: 6.8%; left: 68%; }
+
+        .highlighted {
+            background-color: red;
+            color: white;
+        }
+
+        #formulaField {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 80%;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .semaforo {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .segmento {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            margin: 0 5px;
+            border-radius: 50%;
+        }
+
+        .compuesto-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #nextChallengeButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #nextChallengeButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Desafío de la Cámara de las Valencias</h1>
+
+        <div id="compuestoText" class="compuesto-text"></div>
+
+        <div class="door">
+            <img src="media/puerta.png" alt="Puerta de los Elementos" class="mapped-image">
+            <div class="chemical-symbols">
+                <button onclick="addElement('H')" id="H">H</button>
+                <button onclick="addElement('Cl')" id="Cl">Cl</button>
+                <button onclick="addElement('Na')" id="Na">Na</button>
+                <button onclick="addElement('Al')" id="Al" class="highlighted">Al</button>
+                <button onclick="addElement('Fe')" id="Fe">Fe</button>
+                <button onclick="addElement('S')" id="S">S</button>
+                <button onclick="addElement('Be')" id="Be">Be</button>
+                <button onclick="addElement('O')" id="O">O</button>
+            </div>
+        </div>
+
+        <input type="text" id="formulaField" placeholder="Fórmula" readonly>
+
+        <button onclick="validateFormula()">Validar Fórmula</button>
+
+        <div class="semaforo">
+            <div class="segmento" id="segmento1"></div>
+            <div class="segmento" id="segmento2"></div>
+            <div class="segmento" id="segmento3"></div>
+            <div class="segmento" id="segmento4"></div>
+            <div class="segmento" id="segmento5"></div>
+        </div>
+
+        <button id="nextChallengeButton" style="display: none;" onclick="nextChallenge()">Siguiente Desafío</button>
+    </div>
+
+    <script>
+        let formula = {};
+        let step = 0;
+
+        const compounds = [
+            { name: "Hidruro", element: "Al", formulas: ["AlH3", "BeH2", "NaH", "HCl"] },
+            { name: "Sal", element: "Na", formulas: ["NaCl", "Na2S", "BeCl2", "FeCl2", "FeCl3"] },
+            { name: "Óxido", element: "Fe", formulas: ["Fe2O3", "FeO", "Fe3O4", "BeO", "Al2O3"] },
+            { name: "Ácido", element: "S", formulas: ["H2SO4", "H2S", "H2SO3","HClO","HClO2","HClO3","HClO4"] },
+            { name: "Oxisal", element: "S", formulas: ["Na2SO4","Na2SO3", "K2SO4", "K2SO3", "Al2(SO4)3", "NaClO4","NaClO","NaClO2","NaClO3","FeSO4"] } // Ajuste en la fórmula de Al2(SO4)3
+        ];
+
+        function addElement(element) {
+            if (formula[element]) {
+                formula[element] += 1;
+            } else {
+                formula[element] = 1;
+            }
+            updateFormulaField();
+        }
+
+        function updateFormulaField() {
+            let formulaString = '';
+            for (let element in formula) {
+                formulaString += element;
+                if (formula[element] > 1) {
+                    formulaString += formula[element];
+                }
+            }
+            document.getElementById('formulaField').value = formulaString;
+        }
+
+        function validateFormula() {
+            const formulaString = document.getElementById('formulaField').value;
+            const segment = document.querySelectorAll('.segmento');
+
+            if (compounds[step].formulas.includes(formulaString)) {
+                segment[step].style.backgroundColor = 'green';
+                alert('¡Fórmula correcta!');
+                step++;
+                if (step < compounds.length) {
+                    announceCompound();
+                } else {
+                    document.getElementById('nextChallengeButton').style.display = 'block';
+                }
+            } else {
+                alert('Proporción incorrecta. Inténtalo de nuevo.');
+                document.getElementById('formulaField').value = '';
+            }
+
+            formula = {}; // Reset de la fórmula para la siguiente validación
+        }
+
+        function announceCompound() {
+            document.getElementById('compuestoText').innerText = `Crea un ${compounds[step].name}`;
+            resetHighlight();
+            document.getElementById(compounds[step].element).classList.add('highlighted');
+        }
+
+        function resetHighlight() {
+            document.querySelectorAll('.chemical-symbols button').forEach(button => {
+                button.classList.remove('highlighted');
+            });
+        }
+
+        function nextChallenge() {
+            window.location.href = 'lluvia_valencias.html';
+        }
+
+        // Inicializa el primer compuesto
+        announceCompound();
+    </script>
+</body>
+</html>

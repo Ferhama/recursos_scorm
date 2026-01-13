@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma de los Gases Nobles</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function resolverEnigma() {
+            let respuesta = prompt("Introduce la palabra formada por los gases nobles en orden:");
+            if (respuesta.toLowerCase() === "henearkrxern") {
+                alert("¡Correcto! Has resuelto el enigma.");
+                window.location.href = "cuaderno.html"; // Cambia la URL a la página del siguiente enigma
+            } else {
+                alert("Respuesta incorrecta. Inténtalo de nuevo.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Enigma de los Gases Nobles</h1>
+        <p class="text-main">Los gases tienen la clave... Ordena los gases nobles correctamente para descubrir la palabra oculta.</p>
+        <img src="media/gases.png" alt="Gases Nobles" class="mapped-image">
+        
+        <button class="solve-button" onclick="resolverEnigma()">Resolver el Enigma</button>
+    </div>
+</body>
+</html>

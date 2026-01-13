@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Droguería Antigua</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Ancho máximo de la imagen */
+            margin: auto;
+        }
+        .mapped-image {
+            width: 100%; /* Hacer que la imagen sea responsive */
+            height: auto;
+        }
+        #enigmaButton {
+            margin: 20px auto; /* Centra el botón horizontalmente */
+            display: block;    /* Convierte el botón en un elemento de bloque para que el auto margin funcione */
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #enigmaButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        // Función para escalar las coordenadas del área del mapa de imagen según el tamaño de la imagen
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        // Función para redimensionar las áreas del mapa según el tamaño actual de la imagen
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        // Inicialización de la función de redimensionamiento al cargar y redimensionar la ventana
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+
+        // Función para mostrar la descripción del elemento en un pop-up
+        function showElement(description) {
+            alert(description);
+        }
+
+        function resolveEnigma() {
+            const questions = [
+                {
+                    question: "¿Qué compuesto, utilizado en la limpieza de desagües y fabricación de jabón, tiene la fórmula NaOH?",
+                    validAnswers: ["sosa cáustica", "Hidróxido de sodio"]
+                },
+                {
+                    question: "¿Cuál es el compuesto que se utiliza como desinfectante y blanqueador, con la fórmula H₂O₂?",
+                    validAnswers: ["agua oxigenada", "peróxido de hidrógeno"]
+                },
+                {
+                    question: "¿Qué compuesto se emplea como antiácido y levadura para repostería, con la fórmula NaHCO₃?",
+                    validAnswers: ["bicarbonato de sodio"]
+                },
+                {
+                    question: "¿Qué compuesto, utilizado en baños de sales y como laxante, tiene la fórmula MgSO₄·7H₂O?",
+                    validAnswers: ["sal de epsom"]
+                },
+                {
+                    question: "¿Qué compuesto es utilizado como desodorante y astringente, con la fórmula KAl(SO₄)₂·12H₂O?",
+                    validAnswers: ["alumbre", "KAl(SO₄)₂·12H₂O"]
+                },
+                {
+                    question: "¿Qué compuesto, empleado en la limpieza y como fertilizante, tiene la fórmula NH₃?",
+                    validAnswers: ["amoníaco"]
+                },
+                {
+                    question: "¿Qué ácido se utiliza para la limpieza de metales y eliminación de óxidos, con la fórmula HCl?",
+                    validAnswers: ["ácido muriático", "ácido clorhídrico"]
+                },
+                {
+                    question: "¿Qué compuesto, usado como fertilizante y componente principal de la pólvora, tiene la fórmula KNO₃?",
+                    validAnswers: ["salitre", "nitrato de potasio"]
+                },
+                {
+                    question: "¿Cuál es el compuesto utilizado como desinfectante y blanqueador, con la fórmula NaClO?",
+                    validAnswers: ["blanqueador", "lejía"]
+                },
+                {
+                    question: "¿Qué compuesto es usado como antiséptico e insecticida, con la fórmula H₃BO₃?",
+                    validAnswers: ["ácido bórico"]
+                }
+            ];
+
+            let correctAnswers = 0;
+
+            for (let i = 0; i < questions.length; i++) {
+                let userAnswer = prompt(questions[i].question).toLowerCase();
+                if (questions[i].validAnswers.includes(userAnswer)) {
+                    alert("¡Correcto!");
+                    correctAnswers++;
+                } else {
+                    alert("Incorrecto. La respuesta correcta era una de: " + questions[i].validAnswers.join(", "));
+                }
+            }
+
+            alert(`Has respondido correctamente a ${correctAnswers} de 10 preguntas.`);
+
+            if (correctAnswers >= 8) {
+                alert("¡Has pasado al siguiente nivel!");
+                window.location.href = "juego_cartas.html";
+            } else {
+                alert("No has alcanzado el mínimo necesario de 8 respuestas correctas. Inténtalo de nuevo.");
+                window.location.href = "drogueria.html";
+            }
+        }
+
+
+        function showGameInstructions() {
+            alert("¡Bienvenido a la Droguería Antigua!\n\nInstrucciones:\n1. Explora la imagen de la antigua droguería y haz clic en los frascos para aprender sobre los diferentes compuestos químicos.\n2. Al resolver el enigma, se te harán preguntas sobre los compuestos encontrados en la tienda.\n3. Debes responder al menos 8 de 10 preguntas correctamente para avanzar al siguiente nivel.\n\n¡Buena suerte!");
+        }
+
+        window.onload = function() {
+            showGameInstructions(); // Mostrar las instrucciones del juego
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/tienda.png" alt="Droguería Antigua" usemap="#storeMap" class="mapped-image">
+
+        <map name="storeMap">
+            <!-- Mapeo de las zonas de la droguería con productos -->
+            <area shape="rect" data-coords="10,865,102,965" alt="Sosa cáustica" onclick="showElement('Sosa cáustica: NaOH (hidróxido de sodio). Usos: Limpieza de desagües, fabricación de jabón.')">
+            <area shape="rect" data-coords="665,658,699,735" alt="Agua oxigenada" onclick="showElement('Agua oxigenada: H₂O₂ (peróxido de hidrógeno). Usos: Desinfección, blanqueador, antiséptico.')">
+            <area shape="rect" data-coords="352,661,427,731" alt="Bicarbonato de sodio" onclick="showElement('Bicarbonato de sodio: NaHCO₃ (bicarbonato de sodio). Usos: Antácido, limpieza, levadura para repostería.')">
+            <area shape="rect" data-coords="376,166,438,244" alt="Sal de Epsom" onclick="showElement('Sal de Epsom: MgSO₄·7H₂O (sulfato de magnesio heptahidratado). Usos: Relajante muscular, baño de sales, laxante.')">
+            <area shape="rect" data-coords="884,743,987,874" alt="Alumbre" onclick="showElement('Alumbre: KAl(SO₄)₂·12H₂O (sulfato de potasio y aluminio). Usos: Desodorante, astringente, tratamiento de heridas.')">
+            <area shape="rect" data-coords="18,482,61,596" alt="Amoníaco" onclick="showElement('Amoníaco: NH₃ (amoníaco). Usos: Limpieza, fertilizante, removedor de manchas.')">
+            <area shape="rect" data-coords="65,491,104,587" alt="Ácido muriático" onclick="showElement('Ácido muriático: HCl (ácido clorhídrico diluido). Usos: Limpieza de metales, eliminación de óxidos, desincrustante.')">
+            <area shape="rect" data-coords="166,731,286,877" alt="Salitre" onclick="showElement('Salitre: KNO₃ (nitrato de potasio). Usos: Conservante de alimentos, fabricación de pólvora, fertilizante.')">
+            <area shape="rect" data-coords="969,487,1011,560" alt="Blanqueador" onclick="showElement('Blanqueador: NaClO (hipoclorito de sodio). Usos: Desinfectante, blanqueador, limpieza.')">
+            <area shape="rect" data-coords="615,633,654,726" alt="Azufre en polvo" onclick="showElement('Azufre en polvo: S₈ (azufre). Usos: Fungicida, pesticida, tratamiento de afecciones de la piel.')">
+            <area shape="rect" data-coords="109,827,155,917" alt="Bórax" onclick="showElement('Bórax: Na₂B₄O₇·10H₂O (tetraborato de sodio decahidratado). Usos: Limpieza, fabricación de detergentes, conservante.')">
+            <area shape="rect" data-coords="544,871,718,983" alt="Cal viva" onclick="showElement('Cal viva: CaO (óxido de calcio). Usos: Construcción, tratamiento de suelos, desinfección.')">
+            <area shape="rect" data-coords="19,676,59,748" alt="Ácido bórico" onclick="showElement('Ácido bórico: H₃BO₃ (ácido bórico). Usos: Antiséptico, insecticida, conservante.')">
+            <area shape="rect" data-coords="137,644,158,700" alt="Alcohol de quemar" onclick="showElement('Alcohol de quemar: CH₃OH (metanol). Usos: Combustible, solvente, desinfectante.')">
+            <area shape="rect" data-coords="314,563,369,604" alt="Sales de Rochelle" onclick="showElement('Sales de Rochelle: KNaC₄H₄O₆·4H₂O (tartrato de sodio y potasio). Usos: Laxante, componente en polvos de hornear.')">
+        </map>
+
+        <button id="enigmaButton" onclick="resolveEnigma()">Resolver el Enigma</button>
+    </div>
+</body>
+</html>

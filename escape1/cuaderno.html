@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuaderno de Mendeleiev</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function showNotebookMessage() {
+            alert("Para entender mi orden, no te guíes solo por el peso, sino por las propiedades que comparten:\n\nSn: 118 (SnO₂, SnH₄)\nSb: 122 (SbH₃, Sb₂O₃)\nI: 127 (HI, I₂O₇)\nTe: 128 (H₂Te, TeO₃)");
+            window.location.href = "orden_tabla.html"; // Redirige a la página orden_tabla.html
+        }
+
+        function showItemMessage(item) {
+            alert("Descripción: " + item);
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cuaderno de Mendeleiev</h1>
+        <img src="media/cuaderno.png" alt="Cuaderno de Mendeleiev" usemap="#notebookMap" class="mapped-image">
+
+        <map name="notebookMap">
+            <!-- Área del Cuaderno -->
+            <area shape="rect" data-coords="257,676,871,776" alt="Cuaderno de Mendeleiev" onclick="showNotebookMessage()">
+            <!-- Área de un Matraz -->
+            <area shape="rect" data-coords="267,422,347,584" alt="Matraz" onclick="showItemMessage('Matraz antiguo con sustancias químicas desconocidas')">
+            <!-- Área de un Tubo de Ensayo -->
+            <area shape="rect" data-coords="1,384,137,776" alt="Tubo de Ensayo" onclick="showItemMessage('Tubo de ensayo con un líquido transparente')">
+        </map>
+    </div>
+</body>
+</html>

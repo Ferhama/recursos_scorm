@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorio del Carbono - Puzzle 1</title>
+    <style>
+        body {
+            background-image: url('media/laboratorio.jpg'); /* Imagen de fondo temática */
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #compuestos, #contenedores {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
+        .compuesto {
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(0, 128, 0, 0.7);
+            border-radius: 5px;
+            cursor: grab;
+        }
+        .contenedor {
+            margin: 10px;
+            padding: 20px;
+            width: 200px;
+            min-height: 200px;
+            background-color: rgba(0, 0, 128, 0.7);
+            border-radius: 5px;
+        }
+        .contenedor h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Clasifica los Compuestos en Orgánicos e Inorgánicos</h1>
+    <p>Arrastra cada compuesto al contenedor correcto.</p>
+    <div id="compuestos">
+        <!-- Lista de compuestos para arrastrar -->
+        <div class="compuesto" draggable="true" id="metano">Metano (CH₄)</div>
+        <div class="compuesto" draggable="true" id="agua">Agua (H₂O)</div>
+        <div class="compuesto" draggable="true" id="cloruro">Cloruro de Sodio (NaCl)</div>
+        <div class="compuesto" draggable="true" id="glucosa">Glucosa (C₆H₁₂O₆)</div>
+        <div class="compuesto" draggable="true" id="dioxido">Dióxido de Carbono (CO₂)</div>
+        <div class="compuesto" draggable="true" id="etanol">Etanol (C₂H₅OH)</div>
+        <div class="compuesto" draggable="true" id="acido">Ácido Clorhídrico (HCl)</div>
+        <div class="compuesto" draggable="true" id="propano">Propano (C₃H₈)</div>
+    </div>
+    <div id="contenedores">
+        <!-- Contenedores de destino -->
+        <div class="contenedor" id="organicos" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <h3>Compuestos Orgánicos</h3>
+        </div>
+        <div class="contenedor" id="inorganicos" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <h3>Compuestos Inorgánicos</h3>
+        </div>
+    </div>
+    <button onclick="verificar()">Verificar Respuestas</button>
+
+    <script>
+        // Funciones de arrastrar y soltar
+        const compuestos = document.querySelectorAll('.compuesto');
+        compuestos.forEach(compuesto => {
+            compuesto.addEventListener('dragstart', drag);
+        });
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            event.target.appendChild(document.getElementById(data));
+        }
+
+        // Verificación de respuestas
+        function verificar() {
+            const organicos = ['metano', 'glucosa', 'etanol', 'propano'];
+            const contenedorOrganicos = document.getElementById('organicos');
+            const respuestasOrganicos = [];
+            contenedorOrganicos.querySelectorAll('.compuesto').forEach(elem => {
+                respuestasOrganicos.push(elem.id);
+            });
+
+            const contenedorInorganicos = document.getElementById('inorganicos');
+            const respuestasInorganicos = [];
+            contenedorInorganicos.querySelectorAll('.compuesto').forEach(elem => {
+                respuestasInorganicos.push(elem.id);
+            });
+
+            let correcto = true;
+
+            // Verificar compuestos orgánicos
+            organicos.forEach(id => {
+                if (!respuestasOrganicos.includes(id)) {
+                    correcto = false;
+                }
+            });
+
+            // Verificar compuestos inorgánicos
+            const inorganicos = ['agua', 'cloruro', 'dioxido', 'acido'];
+            inorganicos.forEach(id => {
+                if (!respuestasInorganicos.includes(id)) {
+                    correcto = false;
+                }
+            });
+
+            if (correcto && respuestasOrganicos.length === organicos.length && respuestasInorganicos.length === inorganicos.length) {
+                alert('¡Correcto! Has clasificado todos los compuestos correctamente.');
+                // Aquí puedes agregar código para avanzar al siguiente puzzle
+            } else {
+                alert('Algunas respuestas son incorrectas. Por favor, revisa tus clasificaciones.');
+            }
+        }
+    </script>
+</body>
+</html>

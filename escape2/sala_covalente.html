@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala Covalente</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .floating-molecule {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            z-index: 2;
+        }
+
+        #mol1 {
+            top: 30%;
+            left: 30%;
+        }
+
+        #mol2 {
+            top: 60%;
+            left: 60%;
+        }
+    </style>
+    <script>
+        function showItemMessage(item) {
+            alert("Descripción: " + item);
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; 
+            var scaleY = imgHeight / 1000; 
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        function moveMolecule(molecule) {
+            let directionX = Math.random() < 0.5 ? 1 : -1;
+            let directionY = Math.random() < 0.5 ? 1 : -1;
+            let speed = Math.random() * 2 + 1;  // Velocidad de movimiento
+
+            function move() {
+                const container = document.querySelector('.container');
+                const containerRect = container.getBoundingClientRect();
+                const maxX = containerRect.width - molecule.clientWidth;
+                const maxY = containerRect.height - molecule.clientHeight;
+                
+                let currentX = parseFloat(molecule.style.left);
+                let currentY = parseFloat(molecule.style.top);
+
+                currentX += directionX * speed;
+                currentY += directionY * speed;
+
+                // Rebotar si llega a los bordes
+                if (currentX <= 0 || currentX >= maxX) {
+                    directionX *= -1;
+                }
+                if (currentY <= 0 || currentY >= maxY) {
+                    directionY *= -1;
+                }
+
+                molecule.style.left = `${currentX}px`;
+                molecule.style.top = `${currentY}px`;
+
+                requestAnimationFrame(move);
+            }
+
+            move();
+        }
+
+        window.addEventListener('load', function() {
+            const molecules = document.querySelectorAll('.floating-molecule');
+            molecules.forEach(moveMolecule);
+            resizeMap();  // Ajusta el mapa en función de las dimensiones
+        });
+
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="media/covalentroom.png" alt="Sala Covalente" usemap="#covalentMap" class="mapped-image">
+        <img id="mol1" src="media/mol1.png" alt="Molécula 1" class="floating-molecule" style="left: 30%; top: 30%;">
+        <img id="mol2" src="media/mol2.png" alt="Molécula 2" class="floating-molecule" style="left: 60%; top: 60%;">
+        
+        <map name="covalentMap">
+            <area shape="rect" data-coords="200,400,400,500" alt="Panel de Control" onclick="showItemMessage('Panel de control generador de moléculas')">
+            <area shape="rect" data-coords="0,0,800,800" alt="Moléculas Inestables" onclick="showItemMessage('Moléculas inestables, cuidado con su configuración. Es preciso restablecer la estructura de alguna de las moléculas más básicas del universo')">
+        </map>
+        
+        <button class="solve-button" onclick="window.location.href='panel_control.html'">Al Panel de Control</button>
+    </div>
+</body>
+</html>

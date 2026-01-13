@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Cartas de Compuestos Inorgánicos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FAF48BFF; /* Fondo general */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #24325FFF; /* Color del título */
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #gameArea {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 1200px;
+            margin-top: 20px;
+            background-color: #A6EEE6FF; /* Fondo del área de juego */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #cardArea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60%;
+            flex-wrap: wrap;
+            background-color: #FB6467FF; /* Fondo del área de cartas */
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            width: 60px;
+            height: 90px;
+            background-color: #82491EFF; /* Color de fondo de las cartas */
+            color: #FAFD7CFF; /* Color del texto de las cartas */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #compoundArea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            border: 2px dashed #FB6467FF; /* Borde del área central */
+            margin-top: 20px;
+            width: 60%;
+            background-color: #FAFD7CFF; /* Fondo del área central */
+            border-radius: 10px;
+        }
+
+        #buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #24325FFF; /* Color del botón */
+            color: #FAFD7CFF; /* Color del texto del botón */
+            transition: background-color 0.3s ease;
+        }
+
+        #buttons button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #compoundList {
+            width: 30%;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            margin-left: 20px;
+        }
+
+        #compoundList h3 {
+            color: #82491EFF; /* Color del texto principal */
+            margin-top: 0;
+        }
+
+        #compoundList ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #sendToCenter {
+            display: none; /* Oculta el botón y evita que ocupe espacio */
+        }
+    </style>
+</head>
+<body>
+ 
+
+    <h1>Juego de Cartas de Compuestos Inorgánicos</h1>
+
+    <div id="gameArea">
+        <div id="cardArea"></div>
+
+        <div id="compoundList">
+            <h3>Compuestos Formados</h3>
+            <ul id="compoundsFormed"></ul>
+        </div>
+    </div>
+
+    <div id="compoundArea"></div>
+
+    <div id="buttons">
+        <button id="sendToCenter" disabled>Enviar al Centro</button>
+        <button id="validateCompound" disabled>Validar Compuesto</button>
+        <button id="requestNewCard">Pedir Nueva Carta</button>
+        <button id="resetGameButton">Reiniciar Juego</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+
+    const inorganicCompounds = [
+        { name: 'Óxido de sodio', formula: 'Na2O' },
+        { name: 'Peróxido de sodio', formula: 'Na2O2' },
+        { name: 'Peróxido de potasio', formula: 'K2O2' },
+        { name: 'Peróxido de litio', formula: 'Li2O2' },
+        { name: 'Óxido de calcio', formula: 'CaO' },
+        { name: 'Óxido de aluminio', formula: 'Al2O3' },
+        { name: 'Dióxido de carbono', formula: 'CO2' },
+        { name: 'Trióxido de azufre', formula: 'SO3' },
+        { name: 'Óxido de magnesio', formula: 'MgO' },
+        { name: 'Óxido de bario', formula: 'BaO' },
+        { name: 'Óxido de hierro(III)', formula: 'Fe2O3' },
+        { name: 'Óxido de litio', formula: 'Li2O' },
+        { name: 'Óxido de potasio', formula: 'K2O' },
+        { name: 'Hidruro de litio', formula: 'LiH' },
+        { name: 'Hidruro de sodio', formula: 'NaH' },
+        { name: 'Hidruro de calcio', formula: 'CaH2' },
+        { name: 'Hidruro de magnesio', formula: 'MgH2' },
+        { name: 'Hidruro de bario', formula: 'BaH2' },
+        { name: 'Hidruro de aluminio', formula: 'AlH3' },
+        { name: 'Hidruro de potasio', formula: 'KH' },
+        { name: 'Cloruro de sodio', formula: 'NaCl' },
+        { name: 'Cloruro de litio', formula: 'LiCl' },
+        { name: 'Cloruro de potasio', formula: 'KCl' },
+        { name: 'Cloruro de calcio', formula: 'CaCl2' },
+        { name: 'Cloruro de bario', formula: 'BaCl2' },
+        { name: 'Cloruro de magnesio', formula: 'MgCl2' },
+        { name: 'Bromuro de litio', formula: 'LiBr' },
+        { name: 'Bromuro de sodio', formula: 'NaBr' },
+        { name: 'Bromuro de potasio', formula: 'KBr' },
+        { name: 'Yoduro de litio', formula: 'LiI' },
+        { name: 'Yoduro de sodio', formula: 'NaI' },
+        { name: 'Yoduro de potasio', formula: 'KI' },
+        { name: 'Fluoruro de sodio', formula: 'NaF' },
+        { name: 'Fluoruro de litio', formula: 'LiF' },
+        { name: 'Fluoruro de potasio', formula: 'KF' },
+        { name: 'Nitruro de sodio', formula: 'Na3N' },
+        { name: 'Nitruro de litio', formula: 'Li3N' },
+        { name: 'Nitruro de potasio', formula: 'Li3N' },
+        { name: 'Nitruro de aluminio', formula: 'AlN' },
+        { name: 'Fosfuro de litio', formula: 'Li3P'},
+        { name: 'Fosfuro de sodio', formula: 'Na3P'},
+        { name: 'Fosfuro de potasio', formula: 'K3P'},
+        { name: 'Perbromato de litio', formula: 'LiBrO4' },
+        { name: 'Perbromato de sodio', formula: 'NaBrO4' },
+        { name: 'Perbromato de potasio', formula: 'KBrO4' },
+        { name: 'Bromato de litio', formula: 'LiBrO3' },
+        { name: 'Bromato de sodio', formula: 'NaBrO3' },
+        { name: 'Bromato de potasio', formula: 'KBrO3' },
+        { name: 'Bromito de litio', formula: 'LiBrO2' },
+        { name: 'Bromito de sodio', formula: 'NaBrO2' },
+        { name: 'Bromito de potasio', formula: 'KBrO2' },
+        { name: 'Hipobromito de litio', formula: 'LiBrO' },
+        { name: 'Hipobromito de sodio', formula: 'NaBrO' },
+        { name: 'Hipobromito de potasio', formula: 'KBrO' },
+        { name: 'Nitrato de litio', formula: 'LiNO3' },
+        { name: 'Nitrato de sodio', formula: 'NaNO3' },
+        { name: 'Nitrato de potasio', formula: 'KNO3' },
+        { name: 'Sulfato de litio', formula: 'Li2SO4' },
+        { name: 'Sulfato de sodio', formula: 'Na2SO4' },
+        { name: 'Sulfato de potasio', formula: 'K2SO4' },
+        { name: 'Sulfato de calcio', formula: 'CaSO4' },
+        { name: 'Sulfato de bario', formula: 'BaSO4' },
+        { name: 'Sulfato de magnesio', formula: 'MgSO4' },
+        { name: 'Sulfito de potasio', formula: 'K2SO3' },
+        { name: 'Sulfito de sodio', formula: 'Na2SO3' },
+        { name: 'Sulfito de litio', formula: 'Li2SO3' },
+        { name: 'Sulfito de calcio', formula: 'CaSO3' },
+        { name: 'Sulfito de magnesio', formula: 'MgSO3' },
+        { name: 'Sulfito de bario', formula: 'BaSO3' },
+        { name: 'Carbonato de sodio', formula: 'Na2CO3' },
+        { name: 'Carbonato de litio', formula: 'Li2CO3' },
+        { name: 'Carbonato de calcio', formula: 'CaCO3' },
+        { name: 'Carbonato de potasio', formula: 'K2CO3' },
+        { name: 'Carbonato de magnesio', formula: 'MgCO3' },
+        { name: 'Carbonato de bario', formula: 'BaCO3' },
+        { name: 'Fosfato de sodio', formula: 'Na3PO4' },
+        { name: 'Fosfato de aluminio', formula: 'AlPO4' },
+        { name: 'Perclorato de litio', formula: 'LiClO4' },
+        { name: 'Perclorato de sodio', formula: 'NaClO4' },
+        { name: 'Perclorato de potasio', formula: 'KClO4' },
+        { name: 'Clorato de litio', formula: 'LiClO3' },
+        { name: 'Clorato de sodio', formula: 'NaClO3' },
+        { name: 'Clorato de potasio', formula: 'KClO3' },
+        { name: 'Clorito de litio', formula: 'LiClO2' },
+        { name: 'Clorito de sodio', formula: 'NaClO2' },
+        { name: 'Clorito de potasio', formula: 'KClO2' },
+        { name: 'Hipoclorito de litio', formula: 'LiClO' },
+        { name: 'Hipoclorito de sodio', formula: 'NaClO' },
+        { name: 'Hipoclorito de potasio', formula: 'KClO' },
+        { name: 'Peryodato de litio', formula: 'LiIO4' },
+        { name: 'Peryodato de sodio', formula: 'NaIO4' },
+        { name: 'Peryodato de potasio', formula: 'KIO4' },
+        { name: 'Yodato de litio', formula: 'LiIO3' },
+        { name: 'Yodato de sodio', formula: 'NaIO3' },
+        { name: 'Yodato de potasio', formula: 'KIO3' },
+        { name: 'Yodito de litio', formula: 'LiIO2' },
+        { name: 'Yodito de sodio', formula: 'NaIO2' },
+        { name: 'Yodito de potasio', formula: 'KIO2' },
+        { name: 'Hipoyodito de litio', formula: 'LiIO' },
+        { name: 'Hipoyodito de sodio', formula: 'NaIO' },
+        { name: 'Hipoyodito de potasio', formula: 'KIO' },
+        { name: 'Ácido sulfúrico', formula: 'H2SO4' },
+        { name: 'Ácido carbónico', formula: 'H2CO3' },
+        { name: 'Ácido perclórico', formula: 'HClO4' },
+        { name: 'Ácido clórico', formula: 'HClO3' },
+        { name: 'Ácido cloroso', formula: 'HClO2' },
+        { name: 'Ácido hipocloroso', formula: 'HClO' },
+        { name: 'Ácido perbrómico', formula: 'HBrO4' },
+        { name: 'Ácido brómico', formula: 'HBrO3' },
+        { name: 'Ácido bromoso', formula: 'HBrO2' },
+        { name: 'Ácido hipobromoso', formula: 'HBrO' },
+        { name: 'Ácido peryódico', formula: 'HIO4' },
+        { name: 'Ácido yódico', formula: 'HIO3' },
+        { name: 'Ácido yodoso', formula: 'HIO2' },
+        { name: 'Ácido hipoyodoso', formula: 'HIO' },
+        { name: 'Ácido hipofosforoso', formula: 'H3PO2' },
+        { name: 'Ácido clorhídrico', formula: 'HCl' },
+        { name: 'Ácido fluorhídrico', formula: 'HF' },
+        { name: 'Yoduro de hidrógeno', formula: 'HI' },
+        { name: 'Bromuro de hidrógeno', formula: 'HBr' },
+        { name: 'Ácido nítrico', formula: 'HNO3' },
+        { name: 'Ácido fosfórico', formula: 'H3PO4' },
+        { name: 'Hidróxido de litio', formula: 'LiOH' },
+        { name: 'Hidróxido de sodio', formula: 'NaOH' },
+        { name: 'Hidróxido de potasio', formula: 'KOH' },
+        { name: 'Sulfuro de hidrógeno', formula: 'H2S' },
+        { name: 'Sulfuro de litio', formula: 'Li2S' },
+        { name: 'Sulfuro de sodio', formula: 'Na2S' },
+        { name: 'Sulfuro de potasio', formula: 'K2S' },
+        { name: 'Sulfuro de magnesio', formula: 'MgS' },
+        { name: 'Sulfuro de calcio', formula: 'CaS' },
+        { name: 'Sulfuro de bario', formula: 'BaS' },
+        { name: 'Cloruro de amonio', formula: 'NH4Cl' },
+        { name: 'Bicarbonato de litio', formula: 'LiHCO3' },
+        { name: 'Bicarbonato de sodio', formula: 'NaHCO3' },
+        { name: 'Bicarbonato de potasio', formula: 'KHCO3' },
+        { name: 'Agua', formula: 'H2O' },
+        { name: 'Amoniaco', formula: 'NH3' },
+        { name: 'Fosfina', formula: 'PH3' },
+        { name: 'Nitruro de aluminio', formula: 'AlN' },
+        { name: 'Peróxido de hidrógeno', formula: 'H2O2' },
+        { name: 'Dióxido de Manganeso', formula: 'MnO2' },
+        { name: 'Permanganato de potasio', formula: 'KMnO4' }
+    ];
+    
+        const elements = []; // Aquí se guardan las cartas disponibles
+        let selectedCards = []; // Cartas seleccionadas para formar el compuesto
+        let formedCompounds = []; // Lista de compuestos formados
+        const maxCompounds = 10;  // Número máximo de compuestos correctos necesarios para ganar
+    
+        function getRandomCard() {
+            const maxAttempts = 100; // Para evitar bucles infinitos
+            let attempts = 0;
+            let card;
+
+            do {
+                const compound = inorganicCompounds[Math.floor(Math.random() * inorganicCompounds.length)];
+                const elementsInCompound = splitFormulaIntoElements(compound.formula);
+                const randomElement = elementsInCompound[Math.floor(Math.random() * elementsInCompound.length)];
+                card = randomElement;
+                attempts++;
+
+                if (attempts >= maxAttempts) {
+                    alert('No quedan más cartas únicas disponibles para tu mano.');
+                    return null;
+                }
+            } while (elements.includes(card));
+
+            return card;
+        }
+    
+        // Función que divide una fórmula en elementos químicos y sus cantidades, como H2, Na, O2, etc.
+        function splitFormulaIntoElements(formula) {
+            const elements = [];
+            let element = '';
+            
+            for (let i = 0; i < formula.length; i++) {
+                if (formula[i].match(/[A-Z]/)) {
+                    if (element) {
+                        elements.push(element);
+                    }
+                    element = formula[i];
+                } else if (formula[i].match(/[a-z0-9]/)) {
+                    element += formula[i];
+                }
+            }
+    
+            if (element) {
+                elements.push(element);
+            }
+    
+            return elements;
+        }
+    
+        function initializeGame() {
+            elements.length = 0; // Vaciar las cartas disponibles
+            selectedCards.length = 0; // Vaciar las cartas seleccionadas
+            formedCompounds.length = 0; // Vaciar la lista de compuestos formados
+            updateCompoundList(); // Actualizar la lista en la interfaz
+            renderSelectedCards(); // Limpiar el área central
+            for (let i = 0; i < 5; i++) {
+                addNewCard();
+            }
+            document.getElementById('validateCompound').disabled = true;
+            document.getElementById('requestNewCard').disabled = false;
+        }
+    
+        function addNewCard() {
+            const card = getRandomCard();
+            if (card) {
+                elements.push(card);
+                renderCards();
+            } else {
+                document.getElementById('requestNewCard').disabled = true;
+                alert('No es posible añadir más cartas únicas a tu mano.');
+            }
+        }
+    
+        function renderCards() {
+            const cardArea = document.getElementById('cardArea');
+            console.log("Área de cartas:", cardArea);
+            cardArea.innerHTML = '';
+    
+            elements.forEach((card, index) => {
+                console.log("Renderizando carta:", card);
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.textContent = card;
+                cardDiv.onclick = () => selectCard(index);
+                cardArea.appendChild(cardDiv);
+            });
+        }
+    
+        function selectCard(index) {
+            const card = elements[index];
+            console.log("Carta seleccionada:", card);
+            selectedCards.push(card);
+            elements.splice(index, 1);  // Elimina la carta seleccionada de la lista
+    
+            renderCards();
+            renderSelectedCards();
+    
+            document.getElementById('sendToCenter').disabled = false;
+            document.getElementById('validateCompound').disabled = false;
+        }
+    
+        function renderSelectedCards() {
+            const compoundArea = document.getElementById('compoundArea');
+            console.log("Renderizando cartas seleccionadas en el centro:", selectedCards);
+            compoundArea.innerHTML = '';
+    
+            selectedCards.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.textContent = card;
+                compoundArea.appendChild(cardDiv);
+            });
+        }
+    
+        function validateCompound() {
+            const formedCompound = selectedCards.join('');
+            console.log("Validando compuesto formado:", formedCompound);
+            const compoundMatch = inorganicCompounds.find(c => c.formula === formedCompound);
+
+            if (compoundMatch) {
+                alert(`¡Correcto! Has formado ${compoundMatch.name}`);
+                formedCompounds.push(compoundMatch.name);
+                updateCompoundList();
+                selectedCards = []; // Reiniciar las cartas seleccionadas después de formar un compuesto
+
+                if (formedCompounds.length >= 10) {
+                    alert('¡Has completado 10 compuestos! ¡Has ganado!');
+                    endGame();
+                }
+            } else {
+                alert('Combinación incorrecta. Inténtalo de nuevo.');
+                elements.push(...selectedCards); // Devolver las cartas seleccionadas al jugador
+                selectedCards = []; // Limpiar las cartas seleccionadas
+            }
+
+            renderCards(); // Actualizar la mano del jugador
+            renderSelectedCards(); // Limpiar el área central
+
+            document.getElementById('validateCompound').disabled = true;
+            document.getElementById('sendToCenter').disabled = true;
+
+            if (elements.length === 0 && selectedCards.length === 0) {
+                alert('¡Te has quedado sin cartas! Fin del juego.');
+                endGame();
+            }
+        }
+    
+        function updateCompoundList() {
+            const compoundsFormed = document.getElementById('compoundsFormed');
+            console.log("Actualizando lista de compuestos formados:", formedCompounds);
+            compoundsFormed.innerHTML = '';
+    
+            formedCompounds.forEach(compound => {
+                const li = document.createElement('li');
+                li.textContent = compound;
+                compoundsFormed.appendChild(li);
+            });
+        }
+
+        function endGame() {
+            document.getElementById('validateCompound').disabled = true;
+            document.getElementById('requestNewCard').disabled = true;
+            alert('El juego ha terminado.');
+            nextChallenge()
+        }
+
+        function resetGame() {
+            if (confirm("¿Estás seguro de que deseas reiniciar el juego?")) {
+                initializeGame();
+            }
+        }
+
+        function nextChallenge() {
+            window.location.href = 'final.html'; // Redirigir al siguiente desafío
+        }
+
+        function showGameInstructions() {
+            alert("¡Bienvenido al Juego de Cartas de Compuestos Inorgánicos!\n\nInstrucciones:\n1. Tienes 5 cartas al inicio.\n2. Selecciona las cartas para formar un compuesto químico.\n3. Si el compuesto es correcto, se añadirá a la lista de compuestos formados.\n4. Puedes pedir nuevas cartas si lo necesitas.\n5. El juego termina cuando formas 10 compuestos o te quedas sin cartas.\n\n¡Buena suerte!");
+        }
+
+        document.getElementById('sendToCenter').onclick = renderSelectedCards;
+        document.getElementById('validateCompound').onclick = validateCompound;
+        document.getElementById('requestNewCard').onclick = addNewCard;
+        document.getElementById('resetGameButton').onclick = resetGame;
+
+        showGameInstructions(); // Mostrar las instrucciones del juego
+        
+        initializeGame();
+        
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío de Extracción</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .rick-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-button {
+            background-color: #24325FFF; /* Color del botón */
+            color: #FAFD7CFF; /* Color del texto del botón */
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        .start-button:hover {
+            background-color: #69C8ECFF; /* Color del botón al pasar el ratón */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recupera a Rick</h1>
+        <img src="media/dormido.png" alt="Rick dormido" class="rick-image">
+        <p class="text-main">Rick ha caído en un profundo letargo, disponemos de una extraña mezcla de cafeína y cloroformo. Necesitamos extraer la cafeína en una disolución polar para revertir su condición. Usa los frascos que tienes para realizar las extracciones necesarias.</p>
+        <button class="start-button" onclick="startChallenge()">Comenzar</button>
+    </div>
+
+    <script>
+        function startChallenge() {
+            window.location.href = 'extraccion2.html';
+        }
+    </script>
+</body>
+</html>

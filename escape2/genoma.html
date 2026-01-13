@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADN de Rick</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos generales */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .section {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #000;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+
+        .section h2 {
+            margin-bottom: 10px;
+        }
+
+        .compound {
+            margin: 10px 0;
+        }
+
+        .compound label {
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .compound input[type="number"] {
+            width: 50%;
+            margin-left: 0;
+            text-align: center;
+        }
+
+        .compound input[type="checkbox"] {
+            margin-left: 5px;
+        }
+
+        .compound input[type="number"]:disabled {
+            background-color: #e0e0e0;
+        }
+
+        .result, .error, .hint {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .result {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .hint {
+            color: blue;
+        }
+
+        .next-button, .reset-button {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .next-button[disabled], .reset-button[disabled] {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        /* Media queries para pantallas pequeñas */
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .section {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .compound label {
+                width: 100%;
+                text-align: left;
+            }
+
+            .compound input[type="number"] {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .next-button, .reset-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Corrige la Secuencia de ADN de Rick</h1>
+        <p>Reorganiza las etiquetas para emparejar adenina (A) con timina (T) y guanina (G) con citosina (C) correctamente. Ten en cuenta que los errores en la secuencia están en los pares de bases: A-C, A-G, T-G, T-C. Debes mantener la primera base de cada par y corregir la segunda. Además, elimina la secuencia "GATACA" que Unity ha introducido.</p>
+
+        <!-- Campo para la secuencia de ADN -->
+        <textarea id="adnSequence" rows="5" cols="50">
+            AT GC GT AC GA TA CA GC GT TA GC TG CG TA GC
+        </textarea>
+
+        <button onclick="verifySequence()">Verificar Secuencia</button>
+        <button class="reset-button" onclick="resetSequence()">Resetear Genoma</button> <!-- Botón para resetear -->
+
+        <div id="result" class="result"></div>
+        <div id="imageContainer" class="image-container"></div>
+
+        <!-- Botón oculto para continuar -->
+        <button id="nextButton" class="next-button" style="display:none;" onclick="nextLevel()">Continuar</button>
+    </div>
+
+    <script>
+        const initialSequence = "AT GC GT AC GA TA CA GC GT TA GC TG CG TA GC"; // Secuencia inicial
+
+        function verifySequence() {
+            const sequence = document.getElementById("adnSequence").value.toUpperCase().replace(/\s+/g, '');
+            let isCorrect = checkSequence(sequence);
+
+            const imageContainer = document.getElementById("imageContainer");
+            imageContainer.innerHTML = ""; // Limpiar cualquier imagen anterior
+
+            if (isCorrect) {
+                showImage('rickc137.png');
+                document.getElementById("result").innerText = "¡Secuencia correcta! Rick ha vuelto a la normalidad.";
+                document.getElementById("nextButton").style.display = "inline-block"; // Mostrar el botón de siguiente nivel
+            } else {
+                const mutationImages = ['mut1.png', 'mut2.png', 'mut3.png', 'mut4.png', 'mut5.png'];
+                const randomIndex = Math.floor(Math.random() * mutationImages.length);
+                showImage(mutationImages[randomIndex]);
+                document.getElementById("result").innerText = "¡Secuencia incorrecta! Rick ha sufrido una mutación.";
+                document.getElementById("nextButton").style.display = "none"; // Asegurarse de que el botón permanezca oculto si es incorrecto
+            }
+        }
+
+        function resetSequence() {
+            document.getElementById("adnSequence").value = initialSequence; // Resetea la secuencia al valor inicial
+            document.getElementById("result").innerText = ""; // Limpiar el resultado
+            document.getElementById("imageContainer").innerHTML = ""; // Limpiar cualquier imagen anterior
+            document.getElementById("nextButton").style.display = "none"; // Ocultar el botón de siguiente nivel
+        }
+
+        function showImage(imageName) {
+            const img = document.createElement("img");
+            img.src = `media/${imageName}`;
+            img.alt = "Resultado de la mutación";
+            img.style.maxWidth = "50%";
+            img.style.marginTop = "20px";
+            document.getElementById("imageContainer").appendChild(img);
+        }
+
+        function checkSequence(sequence) {
+            const correctSequence = "AT GC GC AT GC GC TA GC TA CG TA GC";
+            const incorrectPairs = ["AC", "AG", "TG", "TC"];
+            const containsUnitySequence = sequence.includes("GATTACA");
+
+            // Recorremos los pares de bases
+            for (let i = 0; i < sequence.length; i += 2) {
+                const pair = sequence.slice(i, i + 2);
+                if (incorrectPairs.includes(pair)) {
+                    return false; // Hay un par incorrecto
+                }
+            }
+
+            // La secuencia es correcta si coincide con la secuencia correcta y no contiene GATTACA
+            return sequence.replace(/\s+/g, '') === correctSequence.replace(/\s+/g, '') && !containsUnitySequence;
+        }
+
+        function nextLevel() {
+            window.location.href = 'final.html';
+        }
+    </script>
+</body>
+</html>

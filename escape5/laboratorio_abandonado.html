@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorio Abandonado - Clasificación de Compuestos</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Enlazar tu archivo de estilos existente -->
+    <style>
+        /* Estilos específicos para esta página */
+
+        .compound {
+            position: absolute;
+            cursor: grab;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0.5% 1%;
+            border-radius: 5px;
+            user-select: none;
+            font-size: 1.2vw; /* Ajuste del tamaño del texto */
+            text-align: center;
+            width: auto;
+            max-width: 20%; /* Evitar que sean demasiado anchas en pantallas grandes */
+        }
+
+        /* Posiciones iniciales de las etiquetas usando porcentajes */
+        #comp1 { top: 20%; left: 15%; }
+        #comp2 { top: 30%; left: 40%; }
+        #comp3 { top: 50%; left: 25%; }
+        #comp4 { top: 40%; left: 60%; }
+        #comp5 { top: 60%; left: 35%; }
+        #comp6 { top: 25%; left: 70%; }
+        #comp7 { top: 55%; left: 80%; }
+        #comp8 { top: 70%; left: 50%; }
+
+        /* Contenedores de clasificación */
+        .classification-wrapper {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .classification-container {
+            width: 80%; /* Aumentamos el ancho al 80% */
+            max-width: 600px; /* Limitar el ancho máximo */
+            border: 2px dashed #24325FFF;
+            border-radius: 10px;
+            background-color: rgba(166, 238, 230, 0.8);
+            text-align: center;
+            padding: 1%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        /* Ajustamos el margen entre contenedores */
+        #organicos-container {
+            margin-right: 0;
+        }
+
+        #inorganicos-container {
+            margin-left: 0;
+        }
+
+        .classification-container h3 {
+            color: #24325FFF;
+            font-size: 1.5vw;
+            margin-top: 0;
+        }
+
+        /* Estilos para etiquetas dentro de los contenedores */
+        .compound.in-container {
+            position: relative;
+            width: 100%;
+            max-width: none;
+            margin: 2% 0;
+            left: 0;
+            top: 0;
+            cursor: grab;
+            padding: 0; /* Eliminamos el padding inicial */
+            padding-left: 3%; /* Añadimos padding izquierdo del 3% del ancho del contenedor */
+            padding-right: 3%; /* Añadimos padding derecho del 3% del ancho del contenedor */
+            box-sizing: border-box; /* Para incluir el padding en el ancho total */
+        }
+
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 768px) {
+            .compound {
+                font-size: 3vw;
+                padding: 2% 3%;
+            }
+
+            .classification-container h3 {
+                font-size: 4vw;
+            }
+
+            .classification-container {
+                width: 100%;
+                top: 20px
+            }
+
+            .solve-button {
+                font-size: 4vw;
+                padding: 3% 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lab-container">
+        <img src="media/lab1.png" alt="Laboratorio Abandonado" class="lab-image">
+
+        <!-- Etiquetas de compuestos -->
+        <div id="comp1" class="compound" draggable="true">Metano<br>(CH₄)</div>
+        <div id="comp2" class="compound" draggable="true">Agua<br>(H₂O)</div>
+        <div id="comp3" class="compound" draggable="true">Glucosa<br>(C₆H₁₂O₆)</div>
+        <div id="comp4" class="compound" draggable="true">Cloruro de Sodio<br>(NaCl)</div>
+        <div id="comp5" class="compound" draggable="true">Etanol<br>(C₂H₅OH)</div>
+        <div id="comp6" class="compound" draggable="true">Ácido Clorhídrico<br>(HCl)</div>
+        <div id="comp7" class="compound" draggable="true">Propano<br>(C₃H₈)</div>
+        <div id="comp8" class="compound" draggable="true">Dióxido de Carbono<br>(CO₂)</div>
+    </div>
+
+    <!-- Contenedores de clasificación -->
+    <div class="classification-wrapper">
+        <div id="organicos-container" class="classification-container" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <h3>Orgánicos</h3>
+        </div>
+
+        <div id="inorganicos-container" class="classification-container" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <h3>Inorgánicos</h3>
+        </div>
+    </div>
+
+    <!-- Botón para verificar respuestas -->
+    <div style="text-align: center;">
+        <button class="solve-button" onclick="verificar()">Verificar Respuestas</button>
+    </div>
+
+    <script>
+        // Funciones de arrastrar y soltar
+        const compounds = document.querySelectorAll('.compound');
+        compounds.forEach(compound => {
+            compound.addEventListener('dragstart', drag);
+        });
+
+        function drag(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text/plain");
+            const compound = document.getElementById(data);
+
+            // Verificar si el elemento destino es un contenedor de clasificación
+            let target = event.target;
+            if (!target.classList.contains('classification-container')) {
+                // Si el usuario suelta sobre el título u otro elemento interno
+                target = target.closest('.classification-container');
+            }
+
+            if (target && target.classList.contains('classification-container')) {
+                // Añadir la etiqueta al contenedor
+                target.appendChild(compound);
+                // Añadir clase para ajustar el estilo
+                compound.classList.add('in-container');
+                // Ajustar posición
+                compound.style.position = 'relative';
+                compound.style.left = '0';
+                compound.style.top = '0';
+            } else {
+                // Si se suelta fuera de los contenedores, devolver al área original
+                document.querySelector('.lab-container').appendChild(compound);
+                compound.classList.remove('in-container');
+                compound.style.position = 'absolute';
+                // Opcional: Restaurar posición inicial
+                // Aquí podrías guardar y restaurar las posiciones iniciales
+            }
+        }
+
+        // Verificación de respuestas
+        function verificar() {
+            const organicosCorrectos = ['comp1', 'comp3', 'comp5', 'comp7'];
+            const inorganicosCorrectos = ['comp2', 'comp4', 'comp6', 'comp8'];
+
+            let organicosBien = true;
+            let inorganicosBien = true;
+
+            const organicosContainer = document.getElementById('organicos-container');
+            const inorganicosContainer = document.getElementById('inorganicos-container');
+
+            // Obtener IDs de los compuestos en cada contenedor
+            const organicosSeleccionados = Array.from(organicosContainer.querySelectorAll('.compound')).map(elem => elem.id);
+            const inorganicosSeleccionados = Array.from(inorganicosContainer.querySelectorAll('.compound')).map(elem => elem.id);
+
+            // Verificar orgánicos
+            organicosCorrectos.forEach(id => {
+                if (!organicosSeleccionados.includes(id)) {
+                    organicosBien = false;
+                }
+            });
+            if (organicosSeleccionados.length !== organicosCorrectos.length) {
+                organicosBien = false;
+            }
+
+            // Verificar inorgánicos
+            inorganicosCorrectos.forEach(id => {
+                if (!inorganicosSeleccionados.includes(id)) {
+                    inorganicosBien = false;
+                }
+            });
+            if (inorganicosSeleccionados.length !== inorganicosCorrectos.length) {
+                inorganicosBien = false;
+            }
+
+            if (organicosBien && inorganicosBien) {
+                alert('¡Correcto! Has clasificado todos los compuestos correctamente.');
+                // Aquí puedes avanzar al siguiente puzzle o página
+                window.location.href = 'siguiente_puzzle.html'; // Cambia esto a la URL correspondiente
+            } else {
+                alert('Algunas respuestas son incorrectas. Por favor, revisa tus clasificaciones.');
+            }
+        }
+    </script>
+</body>
+</html>

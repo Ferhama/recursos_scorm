@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritorio de Mendeleiev</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function showItemMessage(item) {
+            alert("Descripción: " + item);
+        }
+
+        function scaleCoords(coords, imgWidth, imgHeight) {
+            var scaleX = imgWidth / 1000; // Imagen original de 1000px de ancho
+            var scaleY = imgHeight / 1000; // Imagen original de 1000px de alto
+            return coords.map(function(coord, index) {
+                return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+            });
+        }
+
+        function resizeMap() {
+            var img = document.querySelector('.mapped-image');
+            var areas = document.querySelectorAll('area');
+
+            var imgWidth = img.offsetWidth;
+            var imgHeight = img.offsetHeight;
+
+            areas.forEach(function(area) {
+                var originalCoords = area.dataset.coords.split(',').map(Number);
+                var newCoords = scaleCoords(originalCoords, imgWidth, imgHeight);
+                area.coords = newCoords.join(',');
+            });
+        }
+
+        window.addEventListener('load', resizeMap);
+        window.addEventListener('resize', resizeMap);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Escritorio de Mendeleiev</h1>
+        <img src="media/escritorio.png" alt="Escritorio de Mendeleiev" usemap="#deskMap" class="mapped-image">
+
+        <map name="deskMap">
+            <!-- Área de la Carta -->
+            <area shape="rect" data-coords="369,784,787,946" alt="Carta" href="carta.html">
+            <!-- Área de los Libros -->
+            <area shape="rect" data-coords="779,566,100,776" alt="Libros de Química" onclick="showItemMessage('Libros de Química, incluyendo Experimental Researches in Electricity de Michael Faraday')">
+            <!-- Área de los Matraces -->
+            <area shape="rect" data-coords="521,624,645,730" alt="Matraces" onclick="showItemMessage('Matraces con productos químicos variados')">
+        </map>
+    </div>
+</body>
+</html>

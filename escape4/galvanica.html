@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Zeep - Celda Galvánica</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Contenedor principal */
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1792px;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        /* Imagen del laboratorio */
+        .lab-image {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Áreas mapeadas */
+        .map-area {
+            position: absolute;
+            cursor: pointer;
+        }
+
+        /* Inventario */
+        #inventory {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 90%;
+        }
+
+        .inventory-item {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            background-color: white;
+            border: 1px solid #24325FFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: center;
+            cursor: move;
+        }
+
+        /* Contenedor del popup con posición relativa */
+        .popup-container {
+            position: relative;
+            width: 100%;
+            padding-top: 60%; /* Relación de aspecto para mantener la proporción */
+            background-color: rgba(0, 255, 255, 0.7);
+        }
+
+        /* Pop-up holográfico */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 60%;  /* 60% del ancho de la pantalla */
+            max-width: 600px; /* Ancho máximo */
+            height: 60%; /* 60% de la altura de la pantalla */
+            max-height: 500px; /* Altura máxima */
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        #popup img {
+            max-width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        #popup .component {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            background-color: white;
+            border: 1px solid #24325FFF;
+            border-radius: 5px;
+            cursor: move;
+            display: inline-block;
+        }
+
+        /* Usar porcentajes para la posición de las dropzones */
+        #popup .dropzone {
+            width: 10%; /* Ancho de la dropzone como porcentaje del contenedor */
+            height: 10%; /* Alto de la dropzone como porcentaje del contenedor */
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 2px dashed #24325FFF;
+            border-radius: 5px;
+        }
+
+        /* Posicionamiento de las dropzones */
+        #anode {
+            top: 40%;
+            left: 20%;
+        }
+
+        #cathode {
+            top: 40%;
+            left: 70%;
+        }
+
+        #saltbridge {
+            top: 40%;
+            left: 45%;
+        }
+
+        #solution1 {
+            top: 60%;
+            left: 30%;
+        }
+
+        #solution2 {
+            top: 60%;
+            left: 55%;
+        }
+
+        #closePopupButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #closePopupButton:hover {
+            background-color: darkred;
+        }
+
+        /* Área de activación para el popup */
+        #activationArea {
+            position: absolute;
+            top: 20%; /* Ajusta estas propiedades según la posición que desees */
+            left: 35%;
+            width: 30%;
+            height: 30%;
+            cursor: pointer;
+            background-color: rgba(0, 255, 0, 0.1); /* Visible para pruebas, elimina o ajusta para hacerlo invisible */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="media/galvanic_lab.png" alt="Laboratorio de Zeep" class="lab-image">
+        
+        <!-- Área de activación para mostrar el popup -->
+        <div id="activationArea"></div>
+
+        <!-- Mapear componentes en la imagen -->
+        <div id="zinc" class="map-area" style="top: 80%; left: 33%; width: 5%; height: 10%;" onclick="addToInventory('Zinc')"></div>
+        <div id="copper" class="map-area" style="top: 70%; left: 5%; width: 5%; height: 10%;" onclick="addToInventory('Cobre')"></div>
+        <div id="kcl" class="map-area" style="top: 70%; left: 80%; width: 5%; height: 10%;" onclick="addToInventory('KCl')"></div>
+        <div id="cuso4" class="map-area" style="top: 72%; left: 75%; width: 5%; height: 10%;" onclick="addToInventory('CuSO4')"></div>
+        <div id="znso4" class="map-area" style="top: 78%; left: 26%; width: 5%; height: 10%;" onclick="addToInventory('ZnSO4')"></div>
+        <div id="voltimeter" class="map-area" style="top: 80%; left: 60%; width: 5%; height: 10%;" onclick="addToInventory('Voltímetro')"></div>
+        <!-- Agregar más áreas de componentes... -->
+
+        <!-- Inventario -->
+        <div id="inventory"></div>
+
+        <!-- Pop-up holográfico -->
+        <div id="popup">
+            <button id="closePopupButton">Cerrar</button>
+            <h2>Celda Galvánica</h2>
+            <p>Arrastra los componentes a las posiciones correctas en la celda galvánica.</p>
+            <img src="media/galvanic_cell.png" alt="Diagrama de la Celda Galvánica">
+            <div id="anode" class="dropzone">Ánodo</div>
+            <div id="cathode" class="dropzone">Cátodo</div>
+            <div id="saltbridge" class="dropzone">Puente Salino</div>
+            <div id="solution1" class="dropzone">Disolución 1</div>
+            <div id="solution2" class="dropzone">Disolución 2</div>
+            <!-- Añadir más zonas de arrastre... -->
+        </div>
+
+        <!-- Overlay para fallos -->
+        <div id="failOverlay"></div>
+
+        <!-- Sonido de fallo -->
+        <audio id="failSound" src="media/nooo.mp3"></audio>
+        <audio id="correctSound" src="media/correcto.mp3"></audio>
+    </div>
+
+    <script>
+        let inventory = [];
+        const maxInventory = 10;
+        let correctPlacements = {
+            anode: false,
+            cathode: false,
+            saltbridge: false,
+            solution1: false,
+            solution2: false
+        };
+
+        // Actualiza el inventario
+        function addToInventory(item) {
+            if (!inventory.includes(item)) {
+                if (inventory.length < maxInventory) {
+                    inventory.push(item);
+                    updateInventory();
+                } else {
+                    alert('¡Inventario lleno!');
+                }
+            } else {
+                alert(`${item} ya está en el inventario.`);
+            }
+        }
+
+        // Actualiza el inventario en el DOM
+        function updateInventory() {
+            const inventoryDiv = document.getElementById('inventory');
+            inventoryDiv.innerHTML = '';
+            inventory.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('inventory-item');
+                itemDiv.setAttribute('draggable', 'true');
+                itemDiv.setAttribute('id', item);
+                itemDiv.innerText = item;
+                inventoryDiv.appendChild(itemDiv);
+            });
+
+            enableDragAndDrop();
+        }
+
+        // Habilita arrastrar y soltar
+        function enableDragAndDrop() {
+            const components = document.querySelectorAll('.inventory-item');
+            const dropzones = document.querySelectorAll('#popup .dropzone');
+
+            components.forEach(component => {
+                component.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text', e.target.id);
+                });
+            });
+
+            dropzones.forEach(dropzone => {
+                dropzone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                });
+
+                dropzone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const data = e.dataTransfer.getData('text');
+                    const component = document.getElementById(data);
+                    if (isValidDrop(dropzone, component)) {
+                        dropzone.appendChild(component);
+                        dropzone.style.borderColor = 'green';
+                        checkAllCorrect(); // Comprueba si todos los componentes están correctos
+                    } else {
+                        document.getElementById('failOverlay').style.display = 'block';
+                        document.getElementById('failSound').play();
+                        setTimeout(() => {
+                            document.getElementById('failOverlay').style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            });
+        }
+
+        // Comprueba si un componente está correctamente ubicado
+        function isValidDrop(dropzone, component) {
+            if (dropzone.id === 'anode' && component.innerText === 'Zinc') {
+                correctPlacements.anode = true;
+                return true;
+            }
+            if (dropzone.id === 'cathode' && component.innerText === 'Cobre') {
+                correctPlacements.cathode = true;
+                return true;
+            }
+            if (dropzone.id === 'saltbridge' && component.innerText === 'KCl') {
+                correctPlacements.saltbridge = true;
+                return true;
+            }
+            if (dropzone.id === 'solution1' && component.innerText === 'ZnSO4') {
+                correctPlacements.solution1 = true;
+                return true;
+            }
+            if (dropzone.id === 'solution2' && component.innerText === 'CuSO4') {
+                correctPlacements.solution2 = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        // Comprueba si todos los componentes están correctamente ubicados
+        function checkAllCorrect() {
+            if (correctPlacements.anode && correctPlacements.cathode && correctPlacements.saltbridge && correctPlacements.solution1 && correctPlacements.solution2) {
+                document.getElementById('correctSound').play(); // Reproducir sonido
+                showNextButton(); // Mostrar botón para avanzar
+            }
+        }
+
+        // Muestra el botón para avanzar a la siguiente pantalla
+        function showNextButton() {
+            // Verifica si el botón ya existe
+            if (!document.getElementById('nextButton')) {
+                const nextButton = document.createElement('button');
+                nextButton.id = 'nextButton'; // Asigna un ID único al botón
+                nextButton.innerText = 'Avanzar';
+                nextButton.onclick = function() {
+                    window.location.href = 'final.html'; // Ir a la pantalla final
+                };
+                document.body.appendChild(nextButton); // Agrega el botón al cuerpo del documento
+            }
+        }
+
+
+        // Muestra el popup cuando se hace clic en el área de activación
+        document.getElementById('activationArea').onclick = function() {
+            showPopup();
+        };
+
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        document.getElementById('closePopupButton').onclick = function() {
+            closePopup();
+        };
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+     </script>
+</body>
+</html>
